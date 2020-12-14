@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1607195390468-1
+    id: 1607975241370-1
     author: avkar (generated)
     changes:
     - createTable:
@@ -32,7 +32,37 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: chats
 - changeSet:
-    id: 1607195390468-2
+    id: 1607975241370-2
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: partnumber
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: vendor
+            type: VARCHAR(255)
+        - column:
+            name: price_usd
+            type: DECIMAL(10, 2)
+        tableName: gpl
+- changeSet:
+    id: 1607975241370-3
     author: avkar (generated)
     changes:
     - createTable:
@@ -56,9 +86,9 @@ databaseChangeLog:
         - column:
             name: user_id
             type: INT
-        tableName: message
+        tableName: messages
 - changeSet:
-    id: 1607195390468-3
+    id: 1607975241370-4
     author: avkar (generated)
     changes:
     - createTable:
@@ -76,68 +106,35 @@ databaseChangeLog:
         - column:
             name: username
             type: VARCHAR(255)
-        tableName: user
+        tableName: users
 - changeSet:
-    id: 1607195390468-4
-    author: avkar (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            autoIncrement: true
-            constraints:
-              nullable: false
-              primaryKey: true
-            name: id
-            type: INT
-        - column:
-            name: count
-            type: INT
-        - column:
-            name: word
-            type: VARCHAR(255)
-        - column:
-            name: chat_id
-            type: INT
-        tableName: word
-- changeSet:
-    id: 1607195390468-5
+    id: 1607975241370-5
     author: avkar (generated)
     changes:
     - createIndex:
         columns:
         - column:
             name: chat_id
-        indexName: FK42x69hym7joy0ffxtkuq82wnc
-        tableName: message
+        indexName: FK64w44ngcpqp99ptcb9werdfmb
+        tableName: messages
 - changeSet:
-    id: 1607195390468-6
-    author: avkar (generated)
-    changes:
-    - createIndex:
-        columns:
-        - column:
-            name: chat_id
-        indexName: FK6yoxp50d49gpxn4x964jiq594
-        tableName: word
-- changeSet:
-    id: 1607195390468-7
+    id: 1607975241370-6
     author: avkar (generated)
     changes:
     - createIndex:
         columns:
         - column:
             name: user_id
-        indexName: FKb3y6etti1cfougkdr0qiiemgv
-        tableName: message
+        indexName: FKpsmh6clh3csorw43eaodlqvkn
+        tableName: messages
 - changeSet:
-    id: 1607195390468-8
+    id: 1607975241370-7
     author: avkar (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: chat_id
-        baseTableName: message
-        constraintName: FK42x69hym7joy0ffxtkuq82wnc
+        baseTableName: messages
+        constraintName: FK64w44ngcpqp99ptcb9werdfmb
         deferrable: false
         initiallyDeferred: false
         onDelete: RESTRICT
@@ -146,33 +143,18 @@ databaseChangeLog:
         referencedTableName: chats
         validate: true
 - changeSet:
-    id: 1607195390468-9
-    author: avkar (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: chat_id
-        baseTableName: word
-        constraintName: FK6yoxp50d49gpxn4x964jiq594
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: RESTRICT
-        onUpdate: RESTRICT
-        referencedColumnNames: id
-        referencedTableName: chats
-        validate: true
-- changeSet:
-    id: 1607195390468-10
+    id: 1607975241370-8
     author: avkar (generated)
     changes:
     - addForeignKeyConstraint:
         baseColumnNames: user_id
-        baseTableName: message
-        constraintName: FKb3y6etti1cfougkdr0qiiemgv
+        baseTableName: messages
+        constraintName: FKpsmh6clh3csorw43eaodlqvkn
         deferrable: false
         initiallyDeferred: false
         onDelete: RESTRICT
         onUpdate: RESTRICT
         referencedColumnNames: id
-        referencedTableName: user
+        referencedTableName: users
         validate: true
 

@@ -31,6 +31,6 @@ public class Chat {
     @OneToMany(mappedBy = "chat")
     private List<Message> messages;
 
-    @OneToMany(mappedBy = "chat")
-    private List<Word> words;
+//    @OneToMany(mappedBy = "chat")
+//    private List<Word> words;
 }

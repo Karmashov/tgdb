@@ -32,13 +32,9 @@ public class MessageService {
     }
 
     public void parseText(Update update) {
-        Chat chat = chatRepository.existsChatByChatId(update.getMessage().getChatId().toString()) ?
-                chatRepository.findFirstByChatId(update.getMessage().getChatId().toString()) :
-                addChat(update);
+        Chat chat = chatRepository.findFirstByChatId(update.getMessage().getChatId().toString());
 
-        User user = userRepository.existsUserByUserId(update.getMessage().getFrom().getId().toString()) ?
-                userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString()) :
-                addUser(update);
+        User user = userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString());
 
         LocalDateTime timestamp = parseDate(update.getMessage().getDate());
 
@@ -53,23 +49,23 @@ public class MessageService {
         return ldt;
     }
 
-    private User addUser(Update update) {
-        User user = new User();
-        user.setUserId(update.getMessage().getFrom().getId().toString());
-        user.setUsername(update.getMessage().getFrom().getUserName());
-        userRepository.save(user);
-        return user;
-    }
-
-    private Chat addChat(Update update) {
-        Chat chat = new Chat();
-        chat.setTitle(update.getMessage().getChat().getTitle());
-        chat.setUsername(update.getMessage().getChat().getUserName());
-        chat.setChatId(update.getMessage().getChatId().toString());
-        chatRepository.save(chat);
-
-        return chat;
-    }
+//    private User addUser(Update update) {
+//        User user = new User();
+//        user.setUserId(update.getMessage().getFrom().getId().toString());
+//        user.setUsername(update.getMessage().getFrom().getUserName());
+//        userRepository.save(user);
+//        return user;
+//    }
+//
+//    private Chat addChat(Update update) {
+//        Chat chat = new Chat();
+//        chat.setTitle(update.getMessage().getChat().getTitle());
+//        chat.setUsername(update.getMessage().getChat().getUserName());
+//        chat.setChatId(update.getMessage().getChatId().toString());
+//        chatRepository.save(chat);
+//
+//        return chat;
+//    }
 
     private void writeMessage(String text, Chat chat, User user, LocalDateTime timestamp) {
         Message message = new Message();
