@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/tg_bot?serverTimezone=Europe/Moscow
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    hibernate.ddl-auto: none
+
+  liquibase:
+    url: jdbc:mysql://localhost:3306/tg_bot?serverTimezone=Europe/Moscow
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    user: root
+    password: 1234
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+
+#bot:
+#  username: "mightybusinessbot"
+#  token: "1477944561:AAHA_SsXWVaBAvvs8y6lVQwVMqPpWF79GVk"
