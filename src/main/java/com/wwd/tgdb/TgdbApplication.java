@@ -1,15 +1,13 @@
 package com.wwd.tgdb;
 
 import com.wwd.tgdb.model.Bot;
-import com.wwd.tgdb.repository.ChatRepository;
-import com.wwd.tgdb.repository.MessageRepository;
-import com.wwd.tgdb.repository.PriceRepository;
-import com.wwd.tgdb.repository.UserRepository;
+import com.wwd.tgdb.repository.*;
 import com.wwd.tgdb.service.MessageReceiver;
 import com.wwd.tgdb.service.MessageSender;
 import com.wwd.tgdb.service.impl.AdminService;
 import com.wwd.tgdb.service.impl.MessageService;
 import com.wwd.tgdb.service.impl.PriceService;
+import com.wwd.tgdb.service.impl.UsdRateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -34,18 +32,21 @@ public class TgdbApplication {
 	private static UserRepository userRepository;
 	private static JavaMailSender mailSender;
 	private static PriceRepository priceRepository;
+	private static UsdRateRepository rateRepository;
 
 	@Autowired
 	public TgdbApplication(ChatRepository chatRepository,
 						   MessageRepository messageRepository,
 						   UserRepository userRepository,
 						   JavaMailSender mailSender,
-						   PriceRepository priceRepository) {
+						   PriceRepository priceRepository,
+						   UsdRateRepository rateRepository) {
 		TgdbApplication.chatRepository = chatRepository;
 		TgdbApplication.messageRepository = messageRepository;
 		TgdbApplication.userRepository = userRepository;
 		TgdbApplication.mailSender = mailSender;
 		TgdbApplication.priceRepository = priceRepository;
+		TgdbApplication.rateRepository = rateRepository;
 	}
 
 	public static void main(String[] args) {
@@ -60,8 +61,9 @@ public class TgdbApplication {
 		AdminService adminService = new AdminService(bot, chatRepository, messageRepository, userRepository, mailSender);
 		MessageService messageService = new MessageService(bot, chatRepository, messageRepository, userRepository);
 		PriceService priceService = new PriceService(bot, priceRepository);
+		UsdRateService rateService = new UsdRateService(bot, rateRepository);
 
-		MessageReceiver messageReceiver = new MessageReceiver(bot, chatRepository, userRepository, adminService, messageService, priceService);
+		MessageReceiver messageReceiver = new MessageReceiver(bot, chatRepository, userRepository, adminService, messageService, priceService, rateService);
 		MessageSender messageSender = new MessageSender(bot);
 
 

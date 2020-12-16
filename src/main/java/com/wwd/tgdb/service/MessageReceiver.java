@@ -8,6 +8,7 @@ import com.wwd.tgdb.repository.UserRepository;
 import com.wwd.tgdb.service.impl.AdminService;
 import com.wwd.tgdb.service.impl.MessageService;
 import com.wwd.tgdb.service.impl.PriceService;
+import com.wwd.tgdb.service.impl.UsdRateService;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 public class MessageReceiver implements Runnable{
@@ -18,6 +19,7 @@ public class MessageReceiver implements Runnable{
     private final AdminService adminService;
     private final MessageService messageService;
     private final PriceService priceService;
+    private final UsdRateService rateService;
 
     private Bot bot;
 
@@ -26,13 +28,15 @@ public class MessageReceiver implements Runnable{
                            UserRepository userRepository,
                            AdminService adminService,
                            MessageService messageService,
-                           PriceService priceService) {
+                           PriceService priceService,
+                           UsdRateService rateService) {
         this.bot = bot;
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
         this.adminService = adminService;
         this.messageService = messageService;
         this.priceService = priceService;
+        this.rateService = rateService;
     }
 
     @Override
@@ -86,6 +90,8 @@ public class MessageReceiver implements Runnable{
                         priceService.getPrice(command[1], chatId);
                     }
                     break;
+                case "/rates":
+                    rateService.getRates();
 //                case "/sendstatforto":
 //                    adminService.sendStat(command[1], command[2], chatId);
 //                    break;
