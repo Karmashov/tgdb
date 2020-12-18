@@ -60,7 +60,7 @@ public class TgdbApplication {
 
 		AdminService adminService = new AdminService(bot, chatRepository, messageRepository, userRepository, mailSender);
 		MessageService messageService = new MessageService(bot, chatRepository, messageRepository, userRepository);
-		PriceService priceService = new PriceService(bot, priceRepository);
+		PriceService priceService = new PriceService(bot, priceRepository, rateRepository);
 		UsdRateService rateService = new UsdRateService(bot, rateRepository);
 
 		MessageReceiver messageReceiver = new MessageReceiver(bot, chatRepository, userRepository, adminService, messageService, priceService, rateService);

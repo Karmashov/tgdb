@@ -83,15 +83,21 @@ public class MessageReceiver implements Runnable{
                 case "/chats":
                     adminService.getChats(chatId);
                     break;
-                case "/price":
-                    if (command.length == 3){
-                        priceService.getPriceWithDiscount(command[1], command[2], chatId);
-                    } else {
-                        priceService.getPrice(command[1], chatId);
+//                case "/price":
+//                    if (command.length == 3){
+//                        priceService.getPriceWithDiscount(command[1], command[2], chatId);
+//                    } else {
+//                        priceService.getPrice(command[1], chatId);
+//                    }
+//                    break;
+                case "/pricerub":
+                    if (command.length == 4){
+//                        rateService.getRates(chatId);
+                        priceService.getPriceRub(command[1], command[2], command[3], chatId);
                     }
                     break;
                 case "/rates":
-                    rateService.getRates();
+                    rateService.getRates(chatId);
 //                case "/sendstatforto":
 //                    adminService.sendStat(command[1], command[2], chatId);
 //                    break;

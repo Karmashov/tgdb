@@ -9,6 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.cglib.core.Local;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -24,7 +25,7 @@ public class UsdRateService {
         this.rateRepository = rateRepository;
     }
 
-    public void getRates() {
+    public void getRates(String chatId) {
         StringBuilder sbNow = new StringBuilder("http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=");
         LocalDate dateNow = LocalDate.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -34,6 +35,7 @@ public class UsdRateService {
                 .append(dateNow.plusDays(1).format(formatter))
                 .append("&VAL_NM_RQ=R01235");
 
+        StringBuilder message = new StringBuilder("Загружен курс доллара на ");
         try {
             Document doc = Jsoup.connect(sbNow.toString()).get();
 
@@ -49,9 +51,18 @@ public class UsdRateService {
                     rate.setRate(Double.parseDouble(el.select("Value").text().replace(",", ".")));
                     rateRepository.save(rate);
                 }
+                message.append(ld.toString()).append(" ");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        sendMessage(chatId, message.toString());
+    }
+
+    private void sendMessage(String chatId, String text) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+        bot.sendQueue.add(message);
     }
 }

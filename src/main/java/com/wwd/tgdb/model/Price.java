@@ -20,6 +20,6 @@ public class Price {
 
     private String vendor;
 
-    private BigDecimal priceUsd;
+    private Double priceUsd;
 
 }

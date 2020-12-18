@@ -35,7 +35,7 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println(LocalDateTime.now());
+//        System.out.println(LocalDateTime.now());
 //        System.out.println(update.getMessage().getText());
         receiveQueue.add(update);
 //        BotController botController = new BotController();
