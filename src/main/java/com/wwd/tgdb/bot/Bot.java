@@ -1,50 +1,37 @@
-package com.wwd.tgdb.model;
+package com.wwd.tgdb.bot;
 
+import lombok.Data;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
-import java.time.LocalDateTime;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-//import com.wwd.tgadwards.service.impl.AdminServiceImpl;
-//import com.wwd.tgadwards.service.impl.MessageServiceImpl;
-
-
+@Data
 public class Bot extends TelegramLongPollingBot {
 
     private final int RECONNECT_PAUSE = 10000;
 
-    private String username;
-    private String token;
+    private String userName;
+	private String token;
 
     public final Queue<Object> receiveQueue = new ConcurrentLinkedQueue<>();
     public final Queue<Object> sendQueue = new ConcurrentLinkedQueue<>();
 
-//    @Autowired
-//    public Bot(BotController botController) {
-//        this.botController = botController;
-//    }
-//
-    public Bot(String username, String token) {
-        this.username = username;
-        this.token = token;
+    public Bot() {
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-//        System.out.println(LocalDateTime.now());
-//        System.out.println(update.getMessage().getText());
         receiveQueue.add(update);
-//        BotController botController = new BotController();
-//        botController.controller(update);
     }
 
     @Override
     public String getBotUsername() {
-        return username;
+        return userName;
     }
 
     @Override
@@ -65,5 +52,12 @@ public class Bot extends TelegramLongPollingBot {
             }
             botConnect();
         }
+    }
+
+    public void sendMessage(String chatId, String text) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+        this.sendQueue.add(message);
     }
 }

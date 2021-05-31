@@ -1,9 +1,8 @@
-package com.wwd.tgdb.model;
+package com.wwd.tgdb.model.GPL;
 
 import lombok.Data;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Data
@@ -21,5 +20,9 @@ public class Price {
     private String vendor;
 
     private Double priceUsd;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 }

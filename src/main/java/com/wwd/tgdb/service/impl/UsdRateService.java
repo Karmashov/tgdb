@@ -1,20 +1,20 @@
 package com.wwd.tgdb.service.impl;
 
-import com.wwd.tgdb.model.Bot;
+import com.wwd.tgdb.bot.Bot;
 import com.wwd.tgdb.model.UsdRate;
 import com.wwd.tgdb.repository.UsdRateRepository;
-import org.apache.poi.ss.formula.functions.Rate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.cglib.core.Local;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+@Service
 public class UsdRateService {
 
     private Bot bot;

@@ -1,0 +1,77 @@
+package com.wwd.tgdb.util;
+
+import com.wwd.tgdb.model.GPL.Price;
+import com.wwd.tgdb.repository.CategoryRepository;
+import com.wwd.tgdb.repository.PriceRepository;
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
+
+public class XMLItemHandler extends DefaultHandler {
+    private PriceRepository priceRepository;
+    private CategoryRepository categoryRepository;
+    String information, name, vendor_pn, partnumber, vendor, section_code, price_usd, lastElementName;
+
+    public XMLItemHandler(PriceRepository priceRepository, CategoryRepository categoryRepository) {
+        this.priceRepository = priceRepository;
+        this.categoryRepository = categoryRepository;
+    }
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
+        lastElementName = qName;
+        information = "";
+    }
+
+    @Override
+    public void characters(char[] ch, int start, int length) {
+        information += new String(ch, start, length);
+
+        if (!information.isEmpty()) {
+            if (lastElementName.equals("name"))
+                name = information;
+            if (lastElementName.equals("section_code"))
+                section_code = information;
+            if (lastElementName.equals("partnumber"))
+                partnumber = information;
+            if (lastElementName.equals("vendor"))
+                vendor = information;
+            if (lastElementName.equals("price_usd"))
+                price_usd = information;
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) {
+        try {
+            if (lastElementName.equals("price_usd")) {
+                if (vendor.equals("CISCO")) {
+
+//                    System.out.println(name +
+//                            " - " + partnumber +
+//                            " - " + vendor +
+//                            " - " + section_code +
+//                            " - " + price_usd);
+
+                    Price price = new Price();
+                    price.setName(name);
+                    price.setPartnumber(partnumber);
+                    price.setCategory(categoryRepository.findFirstBySectionId(section_code));
+                    price.setPriceUsd(Double.parseDouble(price_usd));
+
+                    priceRepository.save(price);
+
+                    name = null;
+                    vendor_pn = null;
+                    partnumber = null;
+                    vendor = null;
+                    price_usd = null;
+                }
+            }
+//            if (qName.equals("catalog_item")) {
+//                System.out.println("ITEMS - END");
+//            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
