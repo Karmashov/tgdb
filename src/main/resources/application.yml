@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/db_bot?serverTimezone=Europe/Moscow
-    username: root
-    password: 1234
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -12,19 +12,19 @@ spring:
   liquibase:
     url: jdbc:mysql://localhost:3306/db_bot?serverTimezone=Europe/Moscow
     change-log: classpath:db/changelog/db.changelog-master.yaml
-    user: root
-    password: 1234
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   mail:
     host: smtp.gmail.com
     port: 587
-#    username: ${MAIL_USERNAME}
-#    password: ${MAIL_PASSWORD}
-    username: "no"
-    password: "no"
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+#    username: "no"
+#    password: "no"
 
 bot:
-  username: "ciscodbbot"
-  token: "1427942456:AAGYexfiYcYoGOf3r8h1TD_uYPXWIX8N2x0"
-  adminId: "264318770"
-  adminName: "Karmashov"
+  username: ${BOT_USERNAME}
+  token: ${BOT_TOKEN}
+  adminId: ${BOT_ADMIN_ID}
+  adminName: ${BOT_ADMIN_USERNAME}
