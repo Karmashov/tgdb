@@ -12,6 +12,7 @@ Currently implemented:
 In the plans:
 - [ ] Loading currency rates of the Central Bank of Russia.
 - [ ] Getting the price in RUB.
+- [ ] Automatic receipt of a distributor's price list from the Internet without sending a file to Bot.
 - [ ] Keeping records of goods in the warehouse
 - [ ] Receiving goods to the warehouse.
 - [ ] Shipment of goods from the warehouse.
