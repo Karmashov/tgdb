@@ -36,6 +36,10 @@ public class MessageServiceImpl implements MessageService {
                 }
                 break;
             }
+            case "/тут?": {
+                bot.sendMessage(chatId, "Я на месте");
+                break;
+            }
 //            case "/chatid":
 //                adminService.sendChatId(chatId);
 //                break;
