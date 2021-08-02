@@ -1,7 +1,7 @@
 # Telegram database bot
 ____
 
-Project for corporate database management using Telegram Bot. Project in development. Based on Spring and Telegram Bot API. Project work with Jenkins on AWS servers.
+Project for corporate database management using Telegram Bot. Project in development. Based on Spring and Telegram Bot API. Project work with Jenkins on Amazon servers.
 
 Currently implemented:
 - [X] Uploading the [distributor's (rrc.ru)](https://b2b.rrc.ru/) price list by sending the file to the Bot. Since the price list is more than 20 MB, it must be sent in zip format.
