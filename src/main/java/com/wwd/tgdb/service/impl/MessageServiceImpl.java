@@ -30,7 +30,7 @@ public class MessageServiceImpl implements MessageService {
             case "/price": {
                 if (command.length == 3){
                     bot.sendMessage(chatId,
-                            "Цена со скидкой " + command[2] + ": " + priceService.getPriceWithDiscount(command[1], command[2]));
+                            "Цена со скидкой " + command[2] + "%: " + priceService.getPriceWithDiscount(command[1], command[2]));
                 } else {
                     bot.sendMessage(chatId, "GPL: " + priceService.getPrice(command[1]));
                 }

@@ -1,7 +1,9 @@
 package com.wwd.tgdb.service.impl;
 
+import com.wwd.tgdb.model.GPL.GPLUpload;
 import com.wwd.tgdb.model.GPL.Price;
 import com.wwd.tgdb.repository.CategoryRepository;
+import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.repository.PriceRepository;
 import com.wwd.tgdb.repository.UsdRateRepository;
 import com.wwd.tgdb.service.PriceService;
@@ -17,17 +19,20 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 
 @Service
 public class PriceServiceImpl implements PriceService {
 
     private final PriceRepository priceRepository;
     private final CategoryRepository categoryRepository;
+    private final GPLUploadRepository gplUploadRepository;
     private final UsdRateRepository rateRepository;
 
-    public PriceServiceImpl(PriceRepository priceRepository, CategoryRepository categoryRepository, UsdRateRepository rateRepository) {
+    public PriceServiceImpl(PriceRepository priceRepository, CategoryRepository categoryRepository, GPLUploadRepository gplUploadRepository, UsdRateRepository rateRepository) {
         this.priceRepository = priceRepository;
         this.categoryRepository = categoryRepository;
+        this.gplUploadRepository = gplUploadRepository;
         this.rateRepository = rateRepository;
     }
 
@@ -42,6 +47,9 @@ public class PriceServiceImpl implements PriceService {
             parser.parse(file, categoryHandler);
             priceRepository.deleteAll();
             parser.parse(file,handler);
+            GPLUpload upload = new GPLUpload();
+            upload.setUploadDate(LocalDateTime.now());
+            gplUploadRepository.save(upload);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }

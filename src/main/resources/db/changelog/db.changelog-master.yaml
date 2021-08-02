@@ -1,0 +1,244 @@
+databaseChangeLog:
+- changeSet:
+    id: 1627376541876-1
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: chat_id
+            type: VARCHAR(255)
+        - column:
+            name: chat_type
+            type: VARCHAR(255)
+        - column:
+            name: invite_link
+            type: VARCHAR(255)
+        - column:
+            name: record_on
+            type: BIT(1)
+        - column:
+            name: title
+            type: VARCHAR(255)
+        - column:
+            name: username
+            type: VARCHAR(255)
+        tableName: chats
+- changeSet:
+    id: 1627376541876-2
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: partnumber
+            type: VARCHAR(255)
+        - column:
+            name: price_usd
+            type: DOUBLE
+        - column:
+            name: vendor
+            type: VARCHAR(255)
+        - column:
+            name: category_id
+            type: INT
+        tableName: gpl
+- changeSet:
+    id: 1627376541876-3
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            name: section_id
+            type: VARCHAR(255)
+        tableName: gpl_category
+- changeSet:
+    id: 1627376541876-4
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: upload_date
+            type: datetime
+        tableName: gpl_uploads
+- changeSet:
+    id: 1627376541876-5
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: text
+            type: VARCHAR(255)
+        - column:
+            name: time
+            type: datetime
+        - column:
+            name: chat_id
+            type: INT
+        - column:
+            name: user_id
+            type: INT
+        tableName: messages
+- changeSet:
+    id: 1627376541876-6
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: date
+            type: date
+        - column:
+            name: rate
+            type: DOUBLE
+        tableName: usd_rates
+- changeSet:
+    id: 1627376541876-7
+    author: avkar (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+            name: id
+            type: INT
+        - column:
+            name: user_id
+            type: VARCHAR(255)
+        - column:
+            name: user_role
+            type: VARCHAR(255)
+        - column:
+            name: username
+            type: VARCHAR(255)
+        tableName: users
+- changeSet:
+    id: 1627376541876-8
+    author: avkar (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: chat_id
+        indexName: FK64w44ngcpqp99ptcb9werdfmb
+        tableName: messages
+- changeSet:
+    id: 1627376541876-9
+    author: avkar (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: category_id
+        indexName: FKj5d4ygydlkjhkibtbli1l3t0
+        tableName: gpl
+- changeSet:
+    id: 1627376541876-10
+    author: avkar (generated)
+    changes:
+    - createIndex:
+        columns:
+        - column:
+            name: user_id
+        indexName: FKpsmh6clh3csorw43eaodlqvkn
+        tableName: messages
+- changeSet:
+    id: 1627376541876-11
+    author: avkar (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: chat_id
+        baseTableName: messages
+        constraintName: FK64w44ngcpqp99ptcb9werdfmb
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: chats
+        validate: true
+- changeSet:
+    id: 1627376541876-12
+    author: avkar (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: category_id
+        baseTableName: gpl
+        constraintName: FKj5d4ygydlkjhkibtbli1l3t0
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: gpl_category
+        validate: true
+- changeSet:
+    id: 1627376541876-13
+    author: avkar (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: messages
+        constraintName: FKpsmh6clh3csorw43eaodlqvkn
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+

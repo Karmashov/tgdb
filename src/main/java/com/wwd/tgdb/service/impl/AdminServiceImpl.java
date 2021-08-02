@@ -5,7 +5,6 @@ import com.wwd.tgdb.repository.MessageRepository;
 import com.wwd.tgdb.repository.UserRepository;
 import com.wwd.tgdb.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,17 +14,14 @@ public class AdminServiceImpl implements AdminService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
-    private final JavaMailSender mailSender;
 
 //    @Autowired
     public AdminServiceImpl(ChatRepository chatRepository,
                             MessageRepository messageRepository,
-                            UserRepository userRepository,
-                            JavaMailSender mailSender) {
+                            UserRepository userRepository) {
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
-        this.mailSender = mailSender;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.wwd.tgdb.bot.Bot;
 import com.wwd.tgdb.service.FileService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
@@ -16,6 +17,8 @@ import java.util.zip.ZipInputStream;
 public class FileServiceImpl implements FileService {
     private final Bot bot;
     private final PriceServiceImpl priceServiceImpl;
+    @Value("${upload.path}")
+    private String uploadPath;
 
     @Autowired
     public FileServiceImpl(Bot bot, PriceServiceImpl priceServiceImpl) {
@@ -51,7 +54,9 @@ public class FileServiceImpl implements FileService {
                 String name;
                 while((entry = zis.getNextEntry()) != null) {
                     name = entry.getName();
-                    File file = new File("src/main/resources/upload/" + name);
+//                    File file = new File("src/main/resources/upload/" + name);
+                    File file = new File(uploadPath + "/" + name);
+
 
                     FileOutputStream fos = new FileOutputStream(file);
                     for (int c = zis.read(); c != -1; c = zis.read()) {

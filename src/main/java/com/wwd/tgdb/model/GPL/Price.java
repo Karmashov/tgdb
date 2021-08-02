@@ -21,7 +21,7 @@ public class Price {
 
     private Double priceUsd;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 

@@ -18,6 +18,6 @@ public class Category {
 
     private String sectionId;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     private List<Price> prices;
 }
