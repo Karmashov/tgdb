@@ -1,68 +1,58 @@
 package com.wwd.tgdb.service.impl;
 
-import com.wwd.tgdb.bot.Bot;
-import com.wwd.tgdb.model.UsdRate;
 import com.wwd.tgdb.repository.UsdRateRepository;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import com.wwd.tgdb.util.XMLCurrencyHandler;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
 public class UsdRateService {
 
-    private Bot bot;
     private final UsdRateRepository rateRepository;
 
-    public UsdRateService(Bot bot, UsdRateRepository rateRepository) {
-        this.bot = bot;
+    public UsdRateService(UsdRateRepository rateRepository) {
         this.rateRepository = rateRepository;
     }
 
-    public void getRates(String chatId) {
-        StringBuilder sbNow = new StringBuilder("http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=");
-        LocalDate dateNow = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        sbNow.append(dateNow.format(formatter))
-                .append("&date_req2=")
-                .append(dateNow.plusDays(1).format(formatter))
-                .append("&VAL_NM_RQ=R01235");
-
-        StringBuilder message = new StringBuilder("Загружен курс доллара на ");
+    public String getRates() {
+        LocalDate ld = LocalDate.now();
+        String today = ld.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String tomorrow = ld.plusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         try {
-            Document doc = Jsoup.connect(sbNow.toString()).get();
-
-            Elements src = doc.select("Record");
-
-            for (Element el : src) {
-                LocalDate ld = LocalDate.parse(el.attr("Date"), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-                if (rateRepository.existsByDate(ld)) {
-                    continue;
-                } else {
-                    UsdRate rate = new UsdRate();
-                    rate.setDate(ld);
-                    rate.setRate(Double.parseDouble(el.select("Value").text().replace(",", ".")));
-                    rateRepository.save(rate);
-                }
-                message.append(ld.toString()).append(" ");
+            URL url = new URL("http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" +
+                    today + "&date_req2=" + tomorrow + "&VAL_NM_RQ=R01235");
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                String rateResponse = br.readLine();
+                SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+                XMLCurrencyHandler handler = new XMLCurrencyHandler(rateRepository);
+                parser.parse(new InputSource(new StringReader(rateResponse)), handler);
+            } catch (ParserConfigurationException | SAXException e) {
+                e.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        sendMessage(chatId, message.toString());
+
+        String result = checkRates(ld);
+        return result;
     }
 
-    private void sendMessage(String chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
-        bot.sendQueue.add(message);
+    private String checkRates(LocalDate ld) {
+        if (rateRepository.existsByDate(ld) && rateRepository.existsByDate(ld.plusDays(1))) {
+            return "Загружен курс USD на " + ld + " и " + ld.plusDays(1);
+        }
+        return "Загружен курс USD на " + ld;
     }
 }

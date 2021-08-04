@@ -31,6 +31,7 @@ public class FileServiceImpl implements FileService {
         if (update.getMessage().getDocument().getFileName().equals("GPL.zip")) {
             downloadGPL(update);
         } else {
+            //@TODO Сделать эксепшен
             bot.sendMessage(update.getMessage().getChatId().toString(), "Неверный формат файла");
         }
     }

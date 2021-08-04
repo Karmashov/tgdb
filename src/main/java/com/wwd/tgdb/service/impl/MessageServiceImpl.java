@@ -12,12 +12,15 @@ public class MessageServiceImpl implements MessageService {
 
     private final Bot bot;
     private final PriceService priceService;
+    private final UsdRateService rateService;
 
     @Autowired
     public MessageServiceImpl(Bot bot,
-                              PriceService priceService) {
+                              PriceService priceService,
+                              UsdRateService rateService) {
         this.bot = bot;
         this.priceService = priceService;
+        this.rateService = rateService;
     }
 
     @Override
@@ -34,6 +37,10 @@ public class MessageServiceImpl implements MessageService {
                 } else {
                     bot.sendMessage(chatId, "GPL: " + priceService.getPrice(command[1]));
                 }
+                break;
+            }
+            case "/currency": {
+                bot.sendMessage(chatId, rateService.getRates());
                 break;
             }
             case "/тут?": {

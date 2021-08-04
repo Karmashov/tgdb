@@ -46,7 +46,7 @@ public class PriceServiceImpl implements PriceService {
             categoryRepository.deleteAll();
             parser.parse(file, categoryHandler);
             priceRepository.deleteAll();
-            parser.parse(file,handler);
+            parser.parse(file, handler);
             GPLUpload upload = new GPLUpload();
             upload.setUploadDate(LocalDateTime.now());
             gplUploadRepository.save(upload);
