@@ -104,7 +104,7 @@ public class PriceServiceImpl implements PriceService {
 
         double rate = getRates(date);
         if (rate != 0) {
-            return price.multiply(BigDecimal.valueOf(rateRepository.findFirstByDate(date).getRate())).toString();
+            return price.multiply(BigDecimal.valueOf(rate)).setScale(2, RoundingMode.UP).toString();
         } else {
             return "Курс отсутствует на сайте ЦБ";
         }
