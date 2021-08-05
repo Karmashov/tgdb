@@ -39,22 +39,22 @@ public class MessageServiceImpl implements MessageService {
             case "/price": {
                 if (command.length == 3){
                     bot.sendMessage(chatId,
-                            "Цена " + command[1] + " со скидкой " + command[2] + "%: $" +
+                            "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%: $" +
                                     priceService.getPriceWithDiscount(command[1], command[2]));
                 } else {
-                    bot.sendMessage(chatId, "GPL " + command[1] + ": $" + priceService.getPrice(command[1]));
+                    bot.sendMessage(chatId, "GPL " + command[1].toUpperCase() + ": $" + priceService.getPrice(command[1]));
                 }
                 break;
             }
             case "/pricerub": {
                 if (command.length == 4){
                     bot.sendMessage(chatId,
-                            "Цена " + command[1] + " со скидкой " + command[2] + "%, по курсу на завтра: ₽" +
+                            "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на завтра: ₽" +
                                     priceService.getPriceRub(command[1], command[2], command[3]));
                 } else if (command.length == 3) {
                     bot.sendMessage(chatId,
-                            "Цена " + command[1] + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
-                                    priceService.getPriceRub(command[1], command[2], command[3]));
+                            "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
+                                    priceService.getPriceRub(command[1], command[2], null));
                 }
                 break;
             }
