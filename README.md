@@ -8,10 +8,11 @@ Currently implemented:
 - [X] Parsing the price list and saving it in the database. Implemented saving goods only from Cisco.
 - [X] Getting the Global price of a product, using a command `/price partnumber` where `partnumber` is a model of a product.
 - [X] Getting the price of a product with discount, using a command `/price partnumber -57` where `partnumber` is a model of a product and `-57` is a value of discount in percents.
+- [X] Loading currency rates of the Central Bank of Russia.
+- [X] Getting the price in RUB.
 
 In the plans:
-- [ ] Loading currency rates of the Central Bank of Russia.
-- [ ] Getting the price in RUB.
+
 - [ ] Automatic receipt of a distributor's price list from the Internet without sending a file to Bot.
 - [ ] Keeping records of goods in the warehouse
 - [ ] Receiving goods to the warehouse.
