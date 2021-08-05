@@ -54,7 +54,7 @@ public class MessageServiceImpl implements MessageService {
                 } else if (command.length == 3) {
                     bot.sendMessage(chatId,
                             "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
-                                    priceService.getPriceRub(command[1], command[2], null));
+                                    priceService.getPriceRub(command[1], command[2], ""));
                 }
                 break;
             }
