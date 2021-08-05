@@ -7,6 +7,7 @@ import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.repository.PriceRepository;
 import com.wwd.tgdb.repository.UsdRateRepository;
 import com.wwd.tgdb.service.PriceService;
+import com.wwd.tgdb.service.UsdRateService;
 import com.wwd.tgdb.util.XMLCategoryHandler;
 import com.wwd.tgdb.util.XMLItemHandler;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -28,12 +30,18 @@ public class PriceServiceImpl implements PriceService {
     private final CategoryRepository categoryRepository;
     private final GPLUploadRepository gplUploadRepository;
     private final UsdRateRepository rateRepository;
+    private final UsdRateService rateService;
 
-    public PriceServiceImpl(PriceRepository priceRepository, CategoryRepository categoryRepository, GPLUploadRepository gplUploadRepository, UsdRateRepository rateRepository) {
+    public PriceServiceImpl(PriceRepository priceRepository,
+                            CategoryRepository categoryRepository,
+                            GPLUploadRepository gplUploadRepository,
+                            UsdRateRepository rateRepository,
+                            UsdRateService rateService) {
         this.priceRepository = priceRepository;
         this.categoryRepository = categoryRepository;
         this.gplUploadRepository = gplUploadRepository;
         this.rateRepository = rateRepository;
+        this.rateService = rateService;
     }
 
     @Override
@@ -61,7 +69,7 @@ public class PriceServiceImpl implements PriceService {
     @Override
     public String getPrice(String partnumber) {
         Price result;
-        //@TODO Exception
+        //@TODO Exception, вынести общую логику
         if (priceRepository.existsByPartnumber(partnumber)) {
             result = priceRepository.findFirstByPartnumber(partnumber);
         } else {
@@ -73,7 +81,7 @@ public class PriceServiceImpl implements PriceService {
     @Override
     public String getPriceWithDiscount(String partnumber, String discount) {
         Price result;
-        //@TODO Exception
+        //@TODO Exception, вынести общую логику
         if (priceRepository.existsByPartnumber(partnumber)) {
             result = priceRepository.findFirstByPartnumber(partnumber);
         } else {
@@ -84,38 +92,33 @@ public class PriceServiceImpl implements PriceService {
                 ).setScale(2, RoundingMode.UP);
         return price.toString();
     }
-//
-//    public void getPriceRub(String partnumber, String discount, String dateOfRate, String chatId) {
-//        Price result = null;
-//        //@TODO Exception
-//        if (priceRepository.existsByPartnumber(partnumber)) {
-//            result = priceRepository.findFirstByPartnumber(partnumber);
-//        } else {
-//            sendMessage(chatId, "Not found");
-//        }
-//        assert result != null;
-////        double price = result.getPriceUsd() * (100 - Integer.parseInt(discount.replaceAll("-", ""))) / 100;
-//        BigDecimal price = BigDecimal.valueOf(
-//                result.getPriceUsd() * (100 - Integer.parseInt(discount.replaceAll("-", ""))) / 100
-//                ).setScale(2, RoundingMode.UP);
-////        price = bd.doubleValue();
-//        LocalDate date = LocalDate.now();
-//        if (dateOfRate.equalsIgnoreCase("завтра")) {
-//            date = date.plusDays(1);
-//        }
-//        if (rateRepository.existsByDate(date)) {
-//            price = price.multiply(BigDecimal.valueOf(rateRepository.findFirstByDate(date).getRate()));
-//        } else {
-//            sendMessage(chatId, "Курс отсутствует на сайте ЦБ");
-//        }
-//        String message = price.toString();
-//        sendMessage(chatId, message);
-//    }
-//
-//    private void sendMessage(String chatId, String text) {
-//        SendMessage message = new SendMessage();
-//        message.setChatId(chatId);
-//        message.setText(text);
-//        bot.sendQueue.add(message);
-//    }
+
+    @Override
+    public String getPriceRub(String partnumber, String discount, String dateOfRate) {
+        BigDecimal price = new BigDecimal(getPriceWithDiscount(partnumber, discount));
+
+        LocalDate date = LocalDate.now();
+        if (dateOfRate.equalsIgnoreCase("завтра")) {
+            date = date.plusDays(1);
+        }
+
+        double rate = getRates(date);
+        if (rate != 0) {
+            return price.multiply(BigDecimal.valueOf(rateRepository.findFirstByDate(date).getRate())).toString();
+        } else {
+            return "Курс отсутствует на сайте ЦБ";
+        }
+    }
+
+    private double getRates(LocalDate date) {
+        if (rateRepository.existsByDate(date)) {
+            return rateRepository.findFirstByDate(date).getRate();
+        } else {
+            String result = rateService.downloadRates();
+            if (result.contains(date.toString())) {
+                return getRates(date);
+            }
+            return 0;
+        }
+    }
 }

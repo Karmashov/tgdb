@@ -9,4 +9,6 @@ public interface PriceService {
     String getPriceWithDiscount(String partnumber, String discount);
 
     String getPrice(String partnumber);
+
+    String getPriceRub(String partnumber, String discount, String dateOfRate);
 }

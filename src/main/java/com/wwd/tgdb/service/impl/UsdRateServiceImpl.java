@@ -1,6 +1,7 @@
 package com.wwd.tgdb.service.impl;
 
 import com.wwd.tgdb.repository.UsdRateRepository;
+import com.wwd.tgdb.service.UsdRateService;
 import com.wwd.tgdb.util.XMLCurrencyHandler;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
@@ -18,18 +19,20 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Service
-public class UsdRateService {
+public class UsdRateServiceImpl implements UsdRateService {
 
     private final UsdRateRepository rateRepository;
 
-    public UsdRateService(UsdRateRepository rateRepository) {
+    public UsdRateServiceImpl(UsdRateRepository rateRepository) {
         this.rateRepository = rateRepository;
     }
 
-    public String getRates() {
+    @Override
+    public String downloadRates() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.now();
-        String today = ld.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        String tomorrow = ld.plusDays(1).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        String today = ld.format(formatter);
+        String tomorrow = ld.plusDays(1).format(formatter);
         try {
             URL url = new URL("http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" +
                     today + "&date_req2=" + tomorrow + "&VAL_NM_RQ=R01235");
@@ -45,14 +48,18 @@ public class UsdRateService {
             e.printStackTrace();
         }
 
-        String result = checkRates(ld);
-        return result;
+        return checkRates(ld);
     }
 
     private String checkRates(LocalDate ld) {
-        if (rateRepository.existsByDate(ld) && rateRepository.existsByDate(ld.plusDays(1))) {
-            return "Загружен курс USD на " + ld + " и " + ld.plusDays(1);
+        if (rateRepository.existsByDate(ld)) {
+            if (rateRepository.existsByDate(ld.plusDays(1))) {
+                return "Загружен курс USD на " + ld + " и " + ld.plusDays(1);
+            } else {
+                return "Загружен курс USD на " + ld;
+            }
+        } else {
+            return "Курс USD не был загружен";
         }
-        return "Загружен курс USD на " + ld;
     }
 }

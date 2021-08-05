@@ -1,6 +1,5 @@
 package com.wwd.tgdb.model;
 
-import com.wwd.tgdb.model.enumerated.ChatType;
 import com.wwd.tgdb.model.enumerated.UserRole;
 import lombok.Data;
 
@@ -22,6 +21,8 @@ public class User {
 
     @Enumerated(value = EnumType.STRING)
     private UserRole userRole;
+
+    private String email;
 
     @OneToMany(mappedBy = "user")
     private List<Message> messages;

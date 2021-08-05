@@ -1,6 +1,7 @@
 package com.wwd.tgdb.service.impl;
 
 import com.wwd.tgdb.bot.Bot;
+import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.service.MessageService;
 import com.wwd.tgdb.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +13,18 @@ public class MessageServiceImpl implements MessageService {
 
     private final Bot bot;
     private final PriceService priceService;
-    private final UsdRateService rateService;
+    private final UsdRateServiceImpl rateService;
+    private final GPLUploadRepository uploadRepository;
 
     @Autowired
     public MessageServiceImpl(Bot bot,
                               PriceService priceService,
-                              UsdRateService rateService) {
+                              UsdRateServiceImpl rateService,
+                              GPLUploadRepository uploadRepository) {
         this.bot = bot;
         this.priceService = priceService;
         this.rateService = rateService;
+        this.uploadRepository = uploadRepository;
     }
 
     @Override
@@ -33,15 +37,30 @@ public class MessageServiceImpl implements MessageService {
             case "/price": {
                 if (command.length == 3){
                     bot.sendMessage(chatId,
-                            "Цена со скидкой " + command[2] + "%: " + priceService.getPriceWithDiscount(command[1], command[2]));
+                            "Цена " + command[1] + " со скидкой " + command[2] + "%: $" + priceService.getPriceWithDiscount(command[1], command[2]));
                 } else {
-                    bot.sendMessage(chatId, "GPL: " + priceService.getPrice(command[1]));
+                    bot.sendMessage(chatId, "GPL " + command[1] + ": $" + priceService.getPrice(command[1]));
                 }
                 break;
             }
-            case "/currency": {
-                bot.sendMessage(chatId, rateService.getRates());
+            case "/pricerub": {
+                if (command.length == 4){
+                    bot.sendMessage(chatId,
+                            "Цена " + command[1] + " со скидкой " + command[2] + "%, по курсу на завтра: ₽" +
+                                    priceService.getPriceRub(command[1], command[2], command[3]));
+                } else if (command.length == 3) {
+                    bot.sendMessage(chatId,
+                            "Цена " + command[1] + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
+                                    priceService.getPriceRub(command[1], command[2], command[3]));
+                }
                 break;
+            }
+            case "/rates": {
+                bot.sendMessage(chatId, rateService.downloadRates());
+                break;
+            }
+            case "/gpl": {
+                bot.sendMessage(chatId, "GPL был загружен: " + uploadRepository.findTopByIdDesc().getUploadDate());
             }
             case "/тут?": {
                 bot.sendMessage(chatId, "Я на месте");
@@ -53,16 +72,6 @@ public class MessageServiceImpl implements MessageService {
 //            case "/chats":
 //                adminService.getChats(chatId);
 //                break;
-//            case "/pricerub": {
-//                if (command.length == 4){
-////                        rateService.getRates(chatId);
-//                    priceServiceImpl.getPriceRub(command[1], command[2], command[3], chatId);
-//                }
-//                break;
-//            }
-//            case "/rates": {
-//                rateService.getRates(chatId);
-//            }
 //            case "/sendstatforto":
 //                adminService.sendStat(command[1], command[2], chatId);
 //                break;
