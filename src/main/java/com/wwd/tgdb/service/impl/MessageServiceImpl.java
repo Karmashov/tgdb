@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.format.DateTimeFormatter;
+
 @Service
 public class MessageServiceImpl implements MessageService {
 
@@ -37,7 +39,8 @@ public class MessageServiceImpl implements MessageService {
             case "/price": {
                 if (command.length == 3){
                     bot.sendMessage(chatId,
-                            "Цена " + command[1] + " со скидкой " + command[2] + "%: $" + priceService.getPriceWithDiscount(command[1], command[2]));
+                            "Цена " + command[1] + " со скидкой " + command[2] + "%: $" +
+                                    priceService.getPriceWithDiscount(command[1], command[2]));
                 } else {
                     bot.sendMessage(chatId, "GPL " + command[1] + ": $" + priceService.getPrice(command[1]));
                 }
@@ -60,7 +63,9 @@ public class MessageServiceImpl implements MessageService {
                 break;
             }
             case "/gpl": {
-                bot.sendMessage(chatId, "GPL был загружен: " + uploadRepository.findTopByOrderByIdDesc().getUploadDate());
+                bot.sendMessage(chatId, "GPL был загружен: " +
+                        uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                break;
             }
             case "/тут?": {
                 bot.sendMessage(chatId, "Я на месте");
