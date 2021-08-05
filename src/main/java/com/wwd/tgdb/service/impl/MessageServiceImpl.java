@@ -60,7 +60,7 @@ public class MessageServiceImpl implements MessageService {
                 break;
             }
             case "/gpl": {
-                bot.sendMessage(chatId, "GPL был загружен: " + uploadRepository.findLastUpload().getUploadDate());
+                bot.sendMessage(chatId, "GPL был загружен: " + uploadRepository.findTopByOrderByIdDesc().getUploadDate());
             }
             case "/тут?": {
                 bot.sendMessage(chatId, "Я на месте");
