@@ -35,6 +35,9 @@ public class MessageServiceImpl implements MessageService {
 
         String[] command = receivedMessage.split(" ");
         String chatId = update.getMessage().getChatId().toString();
+        if (command[0].contains("/get") || command[0].contains("/send")) {
+            System.out.println("В методе /get");
+        }
         switch (command[0]) {
             case "/price": {
                 if (command.length == 3){
@@ -67,9 +70,9 @@ public class MessageServiceImpl implements MessageService {
                         uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 break;
             }
-            case "/get": {
-                System.out.println("В методе /get");
-            }
+//            case "/get": {
+//                System.out.println("В методе /get");
+//            }
             case "/тут?": {
                 bot.sendMessage(chatId, "Я на месте");
                 break;
