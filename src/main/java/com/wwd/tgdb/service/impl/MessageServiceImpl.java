@@ -33,11 +33,15 @@ public class MessageServiceImpl implements MessageService {
     public void getMessage(Update update) {
         String receivedMessage = update.getMessage().getText();
 
-        String[] command = receivedMessage.split(" ");
-        String chatId = update.getMessage().getChatId().toString();
-        if (command[0].contains("/get") || command[0].contains("/send")) {
-            System.out.println("В методе /get");
+        String[] command;
+        if (receivedMessage.startsWith("/get") || receivedMessage.startsWith("/send")) {
+//            System.out.println("Нужен новый метод");
+            command = receivedMessage.split("\n");
+        } else {
+            command = receivedMessage.split(" ");
         }
+
+        String chatId = update.getMessage().getChatId().toString();
         switch (command[0]) {
             case "/price": {
                 if (command.length == 3){
@@ -70,9 +74,14 @@ public class MessageServiceImpl implements MessageService {
                         uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 break;
             }
-//            case "/get": {
-//                System.out.println("В методе /get");
-//            }
+            case "/get": {
+                System.out.println("В методе /get");
+                break;
+            }
+            case "/send": {
+                System.out.println("В методе /send");
+                break;
+            }
             case "/тут?": {
                 bot.sendMessage(chatId, "Я на месте");
                 break;

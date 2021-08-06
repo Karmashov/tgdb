@@ -65,10 +65,12 @@ public class MessageReceiver implements Runnable{
             }
 
             if (update.getMessage().getText() != null && update.getMessage().getText().startsWith("/")) {
-                if (user.getUserRole().equals(UserRole.UNKNOWN)) {
-                    bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
-                } else {
+                if (user.getUserRole().equals(UserRole.ADMIN) || user.getUserRole().equals(UserRole.USER)) {
                     messageService.getMessage(update);
+//                } else if (update.getMessage().getText().startsWith("/get") || update.getMessage().getText().startsWith("/send")) {
+//                    System.out.println("Нужен новый метод");
+                } else {
+                    bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
                 }
             } else if (update.getMessage().getDocument() != null) {
                 if (user.getUserRole().equals(UserRole.ADMIN)) {
