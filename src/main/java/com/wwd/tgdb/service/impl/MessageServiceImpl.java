@@ -75,10 +75,12 @@ public class MessageServiceImpl implements MessageService {
                 break;
             }
             case "/get": {
+                //@TODO получение товара
                 System.out.println("В методе /get");
                 break;
             }
             case "/send": {
+                //@TODO получение товара
                 System.out.println("В методе /send");
                 break;
             }
