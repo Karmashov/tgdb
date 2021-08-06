@@ -67,6 +67,9 @@ public class MessageServiceImpl implements MessageService {
                         uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 break;
             }
+            case "/get": {
+                System.out.println("В методе /get");
+            }
             case "/тут?": {
                 bot.sendMessage(chatId, "Я на месте");
                 break;
