@@ -60,4 +60,12 @@ public class Bot extends TelegramLongPollingBot {
         message.setText(text);
         this.sendQueue.add(message);
     }
+
+    public void sendReply(long chatId, String text, int messageId) {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText(text);
+        message.setReplyToMessageId(messageId);
+        this.sendQueue.add(message);
+    }
 }

@@ -1,6 +1,9 @@
 package com.wwd.tgdb.service.impl;
 
 import com.wwd.tgdb.bot.Bot;
+import com.wwd.tgdb.dto.Error;
+import com.wwd.tgdb.dto.Response;
+import com.wwd.tgdb.exception.EntityNotFoundException;
 import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.service.MessageService;
 import com.wwd.tgdb.service.PriceService;
@@ -121,6 +124,13 @@ public class MessageServiceImpl implements MessageService {
         }
 
         //@TODO вызов логики
+    }
+
+    @Override
+    public void sendReply(Response response) {
+        if (response instanceof Error) {
+            throw new EntityNotFoundException(((Error) response).getMessage(), ((Error) response).getChatId(), ((Error) response).getMessageId());
+        }
     }
 
     //    public void parseText(Update update) {
