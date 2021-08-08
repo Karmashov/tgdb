@@ -64,15 +64,17 @@ public class MessageReceiver implements Runnable{
                 user = addUser(update);
             }
 
-            if (update.getMessage().getText() != null && update.getMessage().getText().startsWith("/")) {
+            if (update.hasCallbackQuery()) {
+
+            } else if (update.getMessage().hasText() && update.getMessage().getText().startsWith("/")) {
                 if (user.getUserRole().equals(UserRole.ADMIN) || user.getUserRole().equals(UserRole.USER)) {
-                    messageService.getMessage(update);
+                    messageService.getMessage(update.getMessage());
 //                } else if (update.getMessage().getText().startsWith("/get") || update.getMessage().getText().startsWith("/send")) {
 //                    System.out.println("Нужен новый метод");
                 } else {
                     bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
                 }
-            } else if (update.getMessage().getDocument() != null) {
+            } else if (update.getMessage().hasDocument()) {
                 if (user.getUserRole().equals(UserRole.ADMIN)) {
                     fileService.getFile(update);
                 } else {

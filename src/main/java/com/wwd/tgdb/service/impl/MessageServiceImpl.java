@@ -6,7 +6,11 @@ import com.wwd.tgdb.service.MessageService;
 import com.wwd.tgdb.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.time.format.DateTimeFormatter;
 
@@ -30,18 +34,18 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void getMessage(Update update) {
-        String receivedMessage = update.getMessage().getText();
+    public void getMessage(Message message) {
+        String receivedMessage = message.getText();
 
         String[] command;
-        if (receivedMessage.startsWith("/get") || receivedMessage.startsWith("/send")) {
-//            System.out.println("Нужен новый метод");
+        if (receivedMessage.contains("\n")) {
             command = receivedMessage.split("\n");
         } else {
             command = receivedMessage.split(" ");
         }
 
-        String chatId = update.getMessage().getChatId().toString();
+        String chatId = message.getChatId().toString();
+        //@TODO вынести в отдельный метод с сигнатурой (String command)
         switch (command[0]) {
             case "/price": {
                 if (command.length == 3){
@@ -100,7 +104,26 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
-//    public void parseText(Update update) {
+    @Override
+    public void solveProblem(CallbackQuery query) {
+        String message = query.getMessage().getReplyToMessage().getText();
+        String[] command = message.split(" ");
+        int position = Integer.parseInt(String.valueOf(query.getData().charAt(0)));
+        command[position] = new StringBuilder(query.getData()).deleteCharAt(0).toString();
+
+        DeleteMessage deleteMessage = new DeleteMessage();
+        deleteMessage.setChatId(query.getMessage().getChatId());
+        deleteMessage.setMessageId(query.getMessage().getMessageId());
+        try {
+            bot.execute(deleteMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+        //@TODO вызов логики
+    }
+
+    //    public void parseText(Update update) {
 //        Chat chat = chatRepository.findFirstByChatId(update.getMessage().getChatId().toString());
 //
 //        User user = userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString());
