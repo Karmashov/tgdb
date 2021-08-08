@@ -1,5 +1,6 @@
 package com.wwd.tgdb.service.impl;
 
+import com.wwd.tgdb.dto.Response;
 import com.wwd.tgdb.repository.UsdRateRepository;
 import com.wwd.tgdb.service.UsdRateService;
 import com.wwd.tgdb.util.XMLCurrencyHandler;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -28,9 +30,10 @@ public class UsdRateServiceImpl implements UsdRateService {
     }
 
     @Override
-    public String downloadRates() {
+    public Response downloadRates() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.now();
+        LocalDate ld = LocalDate.now().getDayOfWeek().equals(DayOfWeek.SUNDAY) ?
+                LocalDate.now().minusDays(2) : LocalDate.now();
         String today = ld.format(formatter);
         String tomorrow = ld.plusDays(1).format(formatter);
         try {
@@ -48,7 +51,7 @@ public class UsdRateServiceImpl implements UsdRateService {
             e.printStackTrace();
         }
 
-        return checkRates(ld);
+        return new Response(checkRates(ld));
     }
 
     private String checkRates(LocalDate ld) {

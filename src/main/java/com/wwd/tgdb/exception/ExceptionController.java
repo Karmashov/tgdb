@@ -1,6 +1,5 @@
 package com.wwd.tgdb.exception;
 
-import com.wwd.tgdb.dto.Error;
 import com.wwd.tgdb.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,8 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex) {
-        messageService.sendReply(new Error(ex.getMessage(), ex.get));
+//        System.out.println("popal");
+//        messageService.sendReply(new Error(ex.getMessage(), ex.getChatId(), ex.getMessageId()));
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 

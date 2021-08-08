@@ -4,27 +4,27 @@ import lombok.Data;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Data
-public class EntityNotFoundException extends RuntimeException {
+public class UnknownCommandException extends RuntimeException {
 
     private static String message = "Не найдено";
     private Message tgMessage;
 //    private long chatId;
 //    private int messageId;
 
-    public EntityNotFoundException() {
+    public UnknownCommandException() {
         super(message);
     }
 
-    public EntityNotFoundException(Message tgMessage) {
+    public UnknownCommandException(Message tgMessage) {
         super(message);
         this.tgMessage = tgMessage;
     }
 
-    public EntityNotFoundException(String message) {
+    public UnknownCommandException(String message) {
         super(message);
     }
 
-    public static EntityNotFoundException create() {
-        return new EntityNotFoundException(message);
+    public static UnknownCommandException create() {
+        return new UnknownCommandException(message);
     }
 }

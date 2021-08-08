@@ -12,4 +12,10 @@ public interface MessageService {
     void solveProblem(CallbackQuery query);
 
     void sendReply(Response response);
+
+    void deleteMessage(long chatId, int messageId);
+
+    void deleteKeyboard(long chatId, int messageId);
+
+    void editMessageText(long chatId, int messageId, String text);
 }

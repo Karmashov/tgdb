@@ -32,7 +32,7 @@ public class FileServiceImpl implements FileService {
             downloadGPL(update);
         } else {
             //@TODO Сделать эксепшен
-            bot.sendMessage(update.getMessage().getChatId().toString(), "Неверный формат файла");
+            bot.sendMessage(update.getMessage().getChatId(), "Неверный формат файла");
         }
     }
 
@@ -71,7 +71,7 @@ public class FileServiceImpl implements FileService {
                     String resp = priceServiceImpl.uploadGPL(file);
                     file.delete();
 
-                    bot.sendMessage(update.getMessage().getChatId().toString(), resp);
+                    bot.sendMessage(update.getMessage().getChatId(), resp);
                 }
             }
         } catch (IOException e) {

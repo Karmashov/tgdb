@@ -1,7 +1,7 @@
 package com.wwd.tgdb.service.impl;
 
 import com.wwd.tgdb.bot.Bot;
-import com.wwd.tgdb.dto.Error;
+import com.wwd.tgdb.dto.QuestionResponse;
 import com.wwd.tgdb.dto.Response;
 import com.wwd.tgdb.exception.EntityNotFoundException;
 import com.wwd.tgdb.repository.GPLUploadRepository;
@@ -10,12 +10,15 @@ import com.wwd.tgdb.service.PriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 @Service
 public class MessageServiceImpl implements MessageService {
@@ -46,54 +49,80 @@ public class MessageServiceImpl implements MessageService {
         } else {
             command = receivedMessage.split(" ");
         }
+        generateResponse(command, message);
+    }
 
-        String chatId = message.getChatId().toString();
-        //@TODO вынести в отдельный метод с сигнатурой (String command)
+    private void generateResponse(String[] command, Message message) {
+        Response response;
+        try {
+            response = doLogic(command);
+            response.setChatId(message.getChatId());
+            response.setMessageId(message.getMessageId());
+        } catch (EntityNotFoundException ex) {
+            ex.setTgMessage(message);
+            ex.printStackTrace();
+            response = new Response(message.getChatId(), ex.getMessage(),  message.getMessageId());
+        }
+        sendReply(response);
+    }
+
+    private Response doLogic(String[] command) throws EntityNotFoundException {
         switch (command[0]) {
+//                case "/test": {
+//                    throwException(message);
+//                    break;
+//                }
             case "/price": {
-                if (command.length == 3){
-                    bot.sendMessage(chatId,
-                            "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%: $" +
-                                    priceService.getPriceWithDiscount(command[1], command[2]));
-                } else {
-                    bot.sendMessage(chatId, "GPL " + command[1].toUpperCase() + ": $" + priceService.getPrice(command[1]));
-                }
-                break;
+                return priceService.getPriceWithDiscount(command[1],
+                        //TODO а если придет строка в command[2]?
+                        command.length > 2 ? Integer.parseInt(command[2].replaceAll("[^\\d-.]", "")) : 0,
+                        command.length > 3 ?
+                                command[3].equalsIgnoreCase("завтра") ?
+                                        LocalDate.now().plusDays(1) : LocalDate.now()
+                                : null);
+//                    if (command.length == 3){
+//                        bot.sendMessage(chatId,
+//                                "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%: $" +
+//                                        priceService.getPriceWithDiscount(command[1], command[2]));
+//                    } else {
+//                        bot.sendMessage(chatId, "GPL " + command[1].toUpperCase() + ": $" + priceService.getPrice(command[1]));
+//                    }
+//                    break;
             }
-            case "/pricerub": {
-                if (command.length == 4){
-                    bot.sendMessage(chatId,
-                            "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на завтра: ₽" +
-                                    priceService.getPriceRub(command[1], command[2], command[3]));
-                } else if (command.length == 3) {
-                    bot.sendMessage(chatId,
-                            "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
-                                    priceService.getPriceRub(command[1], command[2], ""));
-                }
-                break;
-            }
+//                case "/pricerub": {
+//                    if (command.length == 4){
+//                        bot.sendMessage(chatId,
+//                                "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на завтра: ₽" +
+//                                        priceService.getPriceRub(command[1], command[2], command[3]));
+//                    } else if (command.length == 3) {
+//                        bot.sendMessage(chatId,
+//                                "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
+//                                        priceService.getPriceRub(command[1], command[2], ""));
+//                    }
+//                    break;
+//                }
             case "/rates": {
-                bot.sendMessage(chatId, rateService.downloadRates());
-                break;
+                return rateService.downloadRates();
             }
             case "/gpl": {
-                bot.sendMessage(chatId, "GPL был загружен: " +
+//                bot.sendMessage(chatId, "GPL был загружен: " +
+//                        uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                return new Response("GPL был загружен: " +
                         uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-                break;
             }
-            case "/get": {
-                //@TODO получение товара
-                System.out.println("В методе /get");
-                break;
-            }
-            case "/send": {
-                //@TODO получение товара
-                System.out.println("В методе /send");
-                break;
-            }
+//                case "/get": {
+//                    //@TODO получение товара
+//                    System.out.println("В методе /get");
+//                    break;
+//                }
+//                case "/send": {
+//                    //@TODO получение товара
+//                    System.out.println("В методе /send");
+//                    break;
+//                }
             case "/тут?": {
-                bot.sendMessage(chatId, "Я на месте");
-                break;
+//                bot.sendMessage(chatId, "Я на месте");
+                return new Response("Я на месте");
             }
 //            case "/chatid":
 //                adminService.sendChatId(chatId);
@@ -105,32 +134,81 @@ public class MessageServiceImpl implements MessageService {
 //                adminService.sendStat(command[1], command[2], chatId);
 //                break;
         }
+        return new Response("Неизвестная команда");
+    }
+
+    private void throwException(Message message) throws EntityNotFoundException {
+        throw new EntityNotFoundException();
     }
 
     @Override
     public void solveProblem(CallbackQuery query) {
         String message = query.getMessage().getReplyToMessage().getText();
-        String[] command = message.split(" ");
+
+        String[] arr;
+        if (message.contains("\n")) {
+            arr = message.split("\n");
+        } else {
+            arr = message.split(" ");
+        }
+
+        String[] command;
         int position = Integer.parseInt(String.valueOf(query.getData().charAt(0)));
+        System.out.println(arr.length + " - " + position);
+        if (arr.length - 1 < position) {
+            command = Arrays.copyOf(arr, position + 1);
+            System.out.println(command.length);
+        } else {
+            command = message.split(" ");
+        }
         command[position] = new StringBuilder(query.getData()).deleteCharAt(0).toString();
 
+        deleteMessage(query.getMessage().getChatId(), query.getMessage().getMessageId());
+
+        generateResponse(command, query.getMessage().getReplyToMessage());
+    }
+
+    @Override
+    public void deleteMessage(long chatId, int messageId) {
         DeleteMessage deleteMessage = new DeleteMessage();
-        deleteMessage.setChatId(query.getMessage().getChatId());
-        deleteMessage.setMessageId(query.getMessage().getMessageId());
+        deleteMessage.setChatId(chatId);
+        deleteMessage.setMessageId(messageId);
         try {
             bot.execute(deleteMessage);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
 
-        //@TODO вызов логики
+    @Override
+    public void deleteKeyboard(long chatId, int messageId) {
+        EditMessageReplyMarkup edit = new EditMessageReplyMarkup();
+        edit.setChatId(chatId);
+        edit.setMessageId(messageId);
+        edit.setReplyMarkup(null);
+        try {
+            bot.execute(edit);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void editMessageText(long chatId, int messageId, String text) {
+        EditMessageText edit = new EditMessageText();
+        edit.setChatId(chatId);
+        edit.setMessageId(messageId);
+        edit.setText(text);
+        try {
+            bot.execute(edit);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void sendReply(Response response) {
-        if (response instanceof Error) {
-            throw new EntityNotFoundException(((Error) response).getMessage(), ((Error) response).getChatId(), ((Error) response).getMessageId());
-        }
+        bot.sendReply(response);
     }
 
     //    public void parseText(Update update) {

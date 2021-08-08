@@ -58,27 +58,41 @@ public class MessageReceiver implements Runnable{
             Update update = (Update) object;
 
             User user;
-            if (userRepository.existsUserByUserId(update.getMessage().getFrom().getId().toString())) {
-                user = userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString());
-            } else {
-                user = addUser(update);
-            }
 
             if (update.hasCallbackQuery()) {
-
-            } else if (update.getMessage().hasText() && update.getMessage().getText().startsWith("/")) {
-                if (user.getUserRole().equals(UserRole.ADMIN) || user.getUserRole().equals(UserRole.USER)) {
-                    messageService.getMessage(update.getMessage());
-//                } else if (update.getMessage().getText().startsWith("/get") || update.getMessage().getText().startsWith("/send")) {
-//                    System.out.println("Нужен новый метод");
+                if (!update.getCallbackQuery().getData().equalsIgnoreCase("нет")) {
+                    messageService.solveProblem(update.getCallbackQuery());
                 } else {
-                    bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
+                    messageService.deleteKeyboard(
+                            update.getCallbackQuery().getMessage().getChatId(),
+                            update.getCallbackQuery().getMessage().getMessageId()
+                    );
+                    messageService.editMessageText(
+                            update.getCallbackQuery().getMessage().getChatId(),
+                            update.getCallbackQuery().getMessage().getMessageId(),
+                            update.getCallbackQuery().getMessage().getText().substring(
+                                    0, update.getCallbackQuery().getMessage().getText().indexOf("\n"))
+                    );
                 }
-            } else if (update.getMessage().hasDocument()) {
-                if (user.getUserRole().equals(UserRole.ADMIN)) {
-                    fileService.getFile(update);
+            } else {
+                if (userRepository.existsUserByUserId(update.getMessage().getFrom().getId().toString())) {
+                    user = userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString());
                 } else {
-                    bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
+                    user = addUser(update);
+                }
+
+                if (update.getMessage().hasText() && update.getMessage().getText().startsWith("/")) {
+                    if (user.getUserRole().equals(UserRole.ADMIN) || user.getUserRole().equals(UserRole.USER)) {
+                        messageService.getMessage(update.getMessage());
+                    } else {
+                        bot.sendMessage(update.getMessage().getChatId(), "Access Denied");
+                    }
+                } else if (update.getMessage().hasDocument()) {
+                    if (user.getUserRole().equals(UserRole.ADMIN)) {
+                        fileService.getFile(update);
+                    } else {
+                        bot.sendMessage(update.getMessage().getChatId(), "Access Denied");
+                    }
                 }
             }
         } else {

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AliasRepository extends JpaRepository<Alias, Integer> {
 
-    boolean existAliasByAlias(String alias);
+    boolean existsByAlias(String alias);
 
     Alias findFirstByAlias(String alias);
 }

@@ -1,14 +1,17 @@
 package com.wwd.tgdb.service;
 
+import com.wwd.tgdb.dto.Response;
+
 import java.io.File;
+import java.time.LocalDate;
 
 public interface PriceService {
 
     String uploadGPL(File file);
 
-    String getPriceWithDiscount(String partnumber, String discount);
+    Response getPriceWithDiscount(String partnumber, int discount, LocalDate dateOfRate);
 
     String getPrice(String partnumber);
 
-    String getPriceRub(String partnumber, String discount, String dateOfRate);
+//    String getPriceRub(String partnumber, String discount, String dateOfRate);
 }
