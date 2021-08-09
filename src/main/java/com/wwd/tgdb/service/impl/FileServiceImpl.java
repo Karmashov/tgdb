@@ -29,9 +29,12 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Response getFile(Update update) throws IllegalFormatException {
+    public void getFile(Update update) throws IllegalFormatException {
         if (update.getMessage().getDocument().getFileName().equals("GPL.zip")) {
-            return downloadGPL(update);
+            Response response = downloadGPL(update);
+            response.setChatId(update.getMessage().getChatId());
+            response.setMessageId(update.getMessage().getMessageId());
+            bot.sendReply(response);
         } else {
             throw new IllegalFormatException();
         }
