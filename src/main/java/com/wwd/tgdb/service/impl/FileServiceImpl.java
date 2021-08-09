@@ -1,6 +1,8 @@
 package com.wwd.tgdb.service.impl;
 
 import com.wwd.tgdb.bot.Bot;
+import com.wwd.tgdb.dto.Response;
+import com.wwd.tgdb.exception.IllegalFormatException;
 import com.wwd.tgdb.service.FileService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +29,15 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void getFile(Update update) {
+    public Response getFile(Update update) throws IllegalFormatException {
         if (update.getMessage().getDocument().getFileName().equals("GPL.zip")) {
-            downloadGPL(update);
+            return downloadGPL(update);
         } else {
-            //@TODO Сделать эксепшен
-            bot.sendMessage(update.getMessage().getChatId(), "Неверный формат файла");
+            throw new IllegalFormatException();
         }
     }
 
-    private void downloadGPL(Update update) {
+    private Response downloadGPL(Update update) {
         try {
             URL url = new URL("https://api.telegram.org/bot" +
                     bot.getBotToken() + "/getFile?file_id=" +
@@ -66,16 +67,17 @@ public class FileServiceImpl implements FileService {
                     fos.flush();
                     zis.closeEntry();
                     fos.close();
-//                    System.out.println("END");
 
-                    String resp = priceServiceImpl.uploadGPL(file);
+                    Response resp = priceServiceImpl.uploadGPL(file);
+
                     file.delete();
 
-                    bot.sendMessage(update.getMessage().getChatId(), resp);
+                    return resp;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return new Response("Файл не загружен");
     }
 }

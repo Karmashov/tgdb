@@ -1,9 +1,9 @@
 package com.wwd.tgdb.service.impl;
 
 import com.wwd.tgdb.bot.Bot;
-import com.wwd.tgdb.dto.QuestionResponse;
 import com.wwd.tgdb.dto.Response;
 import com.wwd.tgdb.exception.EntityNotFoundException;
+import com.wwd.tgdb.exception.UnknownCommandException;
 import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.service.MessageService;
 import com.wwd.tgdb.service.PriceService;
@@ -62,66 +62,48 @@ public class MessageServiceImpl implements MessageService {
             ex.setTgMessage(message);
             ex.printStackTrace();
             response = new Response(message.getChatId(), ex.getMessage(),  message.getMessageId());
+        } catch (UnknownCommandException ex) {
+            ex.setTgMessage(message);
+            ex.printStackTrace();
+            response = new Response(message.getChatId(), ex.getMessage(),  message.getMessageId());
         }
+
         sendReply(response);
     }
 
-    private Response doLogic(String[] command) throws EntityNotFoundException {
+    private Response doLogic(String[] command) throws EntityNotFoundException, UnknownCommandException {
         switch (command[0]) {
 //                case "/test": {
 //                    throwException(message);
 //                    break;
 //                }
             case "/price": {
-                return priceService.getPriceWithDiscount(command[1],
+                return priceService.getPrice(command[1],
                         //TODO а если придет строка в command[2]?
                         command.length > 2 ? Integer.parseInt(command[2].replaceAll("[^\\d-.]", "")) : 0,
                         command.length > 3 ?
                                 command[3].equalsIgnoreCase("завтра") ?
                                         LocalDate.now().plusDays(1) : LocalDate.now()
                                 : null);
-//                    if (command.length == 3){
-//                        bot.sendMessage(chatId,
-//                                "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%: $" +
-//                                        priceService.getPriceWithDiscount(command[1], command[2]));
-//                    } else {
-//                        bot.sendMessage(chatId, "GPL " + command[1].toUpperCase() + ": $" + priceService.getPrice(command[1]));
-//                    }
-//                    break;
             }
-//                case "/pricerub": {
-//                    if (command.length == 4){
-//                        bot.sendMessage(chatId,
-//                                "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на завтра: ₽" +
-//                                        priceService.getPriceRub(command[1], command[2], command[3]));
-//                    } else if (command.length == 3) {
-//                        bot.sendMessage(chatId,
-//                                "Цена " + command[1].toUpperCase() + " со скидкой " + command[2] + "%, по курсу на сегодня: ₽" +
-//                                        priceService.getPriceRub(command[1], command[2], ""));
-//                    }
-//                    break;
-//                }
             case "/rates": {
                 return rateService.downloadRates();
             }
             case "/gpl": {
-//                bot.sendMessage(chatId, "GPL был загружен: " +
-//                        uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
                 return new Response("GPL был загружен: " +
                         uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
             }
 //                case "/get": {
-//                    //@TODO получение товара
+//                    //TODO получение товара
 //                    System.out.println("В методе /get");
 //                    break;
 //                }
 //                case "/send": {
-//                    //@TODO получение товара
+//                    //TODO получение товара
 //                    System.out.println("В методе /send");
 //                    break;
 //                }
             case "/тут?": {
-//                bot.sendMessage(chatId, "Я на месте");
                 return new Response("Я на месте");
             }
 //            case "/chatid":
@@ -134,11 +116,7 @@ public class MessageServiceImpl implements MessageService {
 //                adminService.sendStat(command[1], command[2], chatId);
 //                break;
         }
-        return new Response("Неизвестная команда");
-    }
-
-    private void throwException(Message message) throws EntityNotFoundException {
-        throw new EntityNotFoundException();
+        throw new UnknownCommandException();
     }
 
     @Override
@@ -154,10 +132,8 @@ public class MessageServiceImpl implements MessageService {
 
         String[] command;
         int position = Integer.parseInt(String.valueOf(query.getData().charAt(0)));
-        System.out.println(arr.length + " - " + position);
         if (arr.length - 1 < position) {
             command = Arrays.copyOf(arr, position + 1);
-            System.out.println(command.length);
         } else {
             command = message.split(" ");
         }
@@ -210,50 +186,4 @@ public class MessageServiceImpl implements MessageService {
     public void sendReply(Response response) {
         bot.sendReply(response);
     }
-
-    //    public void parseText(Update update) {
-//        Chat chat = chatRepository.findFirstByChatId(update.getMessage().getChatId().toString());
-//
-//        User user = userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString());
-//
-//        LocalDateTime timestamp = parseDate(update.getMessage().getDate());
-//
-//        String text = EmojiParser.removeAllEmojis(update.getMessage().getText());
-//        if (!text.equals("")) {
-//            writeMessage(text, chat, user, timestamp);
-//        }
-//    }
-
-//    private LocalDateTime parseDate(Integer date) {
-//        LocalDateTime ldt = Instant.ofEpochSecond(date).atZone(ZoneId.systemDefault()).toLocalDateTime();
-//        return ldt;
-//    }
-
-//    private User addUser(Update update) {
-//        User user = new User();
-//        user.setUserId(update.getMessage().getFrom().getId().toString());
-//        user.setUsername(update.getMessage().getFrom().getUserName());
-//        userRepository.save(user);
-//        return user;
-//    }
-//
-//    private Chat addChat(Update update) {
-//        Chat chat = new Chat();
-//        chat.setTitle(update.getMessage().getChat().getTitle());
-//        chat.setUsername(update.getMessage().getChat().getUserName());
-//        chat.setChatId(update.getMessage().getChatId().toString());
-//        chatRepository.save(chat);
-//
-//        return chat;
-//    }
-
-//    private void writeMessage(String text, Chat chat, User user, LocalDateTime timestamp) {
-//        Message message = new Message();
-//        message.setText(text);
-//        message.setChat(chat);
-//        message.setUser(user);
-//        message.setTime(timestamp);
-//        messageRepository.save(message);
-//        System.out.println(LocalDateTime.now());
-//    }
 }

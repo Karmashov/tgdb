@@ -32,10 +32,21 @@ public class UsdRateServiceImpl implements UsdRateService {
     @Override
     public Response downloadRates() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ld = LocalDate.now().getDayOfWeek().equals(DayOfWeek.SUNDAY) ?
-                LocalDate.now().minusDays(2) : LocalDate.now();
+        LocalDate ld = LocalDate.now();
+
+
+        int shift = 1;
+        if (ld.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+            ld = ld.minusDays(1);
+        } else if (ld.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+            ld = ld.minusDays(2);
+        } else if (ld.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
+            ld = ld.minusDays(2);
+            shift = 3;
+        }
         String today = ld.format(formatter);
-        String tomorrow = ld.plusDays(1).format(formatter);
+        String tomorrow = ld.plusDays(shift).format(formatter);
+
         try {
             URL url = new URL("http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" +
                     today + "&date_req2=" + tomorrow + "&VAL_NM_RQ=R01235");

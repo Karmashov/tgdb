@@ -14,7 +14,6 @@ import com.wwd.tgdb.service.PriceService;
 import com.wwd.tgdb.service.UsdRateService;
 import com.wwd.tgdb.util.XMLCategoryHandler;
 import com.wwd.tgdb.util.XMLItemHandler;
-import org.apache.poi.ss.formula.functions.Rate;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
@@ -51,7 +50,7 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public String uploadGPL(File file) {
+    public Response uploadGPL(File file) {
         try {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             XMLItemHandler handler = new XMLItemHandler(priceRepository, categoryRepository);
@@ -68,29 +67,11 @@ public class PriceServiceImpl implements PriceService {
             e.printStackTrace();
         }
 
-        //@TODO Сделать Response
-        return "GPL uploaded";
+        return new Response("GPL загружен");
     }
 
     @Override
-    public String getPrice(String partnumber) throws EntityNotFoundException {
-//        Price result;
-//        if (priceRepository.existsByPartnumber(partnumber)) {
-//            result = priceRepository.findFirstByPartnumber(partnumber);
-//        } else {
-//            return "Не найдено";
-//        }
-        return getResultPrice(partnumber, 0).toString();
-    }
-
-    @Override
-    public Response getPriceWithDiscount(String partnumber, int discount, LocalDate dateOfRate) throws EntityNotFoundException {
-        Price result;
-//        if (priceRepository.existsByPartnumber(partnumber)) {
-//            result = priceRepository.findFirstByPartnumber(partnumber);
-//        } else {
-//            throw new EntityNotFoundException();
-//        }
+    public Response getPrice(String partnumber, int discount, LocalDate dateOfRate) throws EntityNotFoundException {
         BigDecimal price = getResultPrice(partnumber, discount);
 
         String response;
@@ -106,8 +87,7 @@ public class PriceServiceImpl implements PriceService {
         } else {
             response = "GPL " + partnumber + ": $" + price;
         }
-//        String response = "Цена " + partnumber + " со скидкой " + discount + "%: $" +
-//                getResultPrice(partnumber, discount);
+
         return new Response(response);
     }
 
@@ -121,7 +101,7 @@ public class PriceServiceImpl implements PriceService {
 
         if (!rate.getDate().equals(dateOfRate)) {
             //TODO эксепшен
-            return "Курс на " + dateOfRate.format(formatter) + " не найден.\n" +
+            return "Курс на " + dateOfRate.format(formatter) + " не найден.\n\n" +
                     response + date.format(formatter) + ": ₽" + price;
         } else if (rate.getDate().equals(dateOfRate) && dateOfRate.equals(LocalDate.now())) {
             return response + "сегодня: ₽" + price;
@@ -142,30 +122,9 @@ public class PriceServiceImpl implements PriceService {
                 .setScale(2, RoundingMode.UP);
     }
 
-//    @Override
-//    public String getPriceRub(String partnumber, String discount, String dateOfRate) throws EntityNotFoundException {
-//        BigDecimal price = getResultPrice(partnumber, Integer.parseInt(discount));
-//
-//        LocalDate date = LocalDate.now();
-//        if (dateOfRate.equalsIgnoreCase("завтра")) {
-//            date = date.plusDays(1);
-//        }
-//
-//        double rate = getRates(date);
-//        if (rate != 0) {
-//            return price.multiply(BigDecimal.valueOf(rate)).setScale(2, RoundingMode.UP).toString();
-//        } else {
-//            return "Курс отсутствует на сайте ЦБ";
-//        }
-//    }
-
     private UsdRate getRates(LocalDate date) {
         rateService.downloadRates();
-//        if (rateRepository.existsByDate(date)) {
-//            return rateRepository.findFirstByDate(date);
-//        } else {
-//            return rateRepository.findTopByOrderByIdDesc();
-//        }
-        return rateRepository.existsByDate(date) ? rateRepository.findFirstByDate(date) : rateRepository.findTopByOrderByIdDesc();
+        return rateRepository.existsByDate(date) ?
+                rateRepository.findFirstByDate(date) : rateRepository.findTopByOrderByIdDesc();
     }
 }

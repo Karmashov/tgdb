@@ -7,11 +7,8 @@ import java.time.LocalDate;
 
 public interface PriceService {
 
-    String uploadGPL(File file);
+    Response uploadGPL(File file);
 
-    Response getPriceWithDiscount(String partnumber, int discount, LocalDate dateOfRate);
+    Response getPrice(String partnumber, int discount, LocalDate dateOfRate);
 
-    String getPrice(String partnumber);
-
-//    String getPriceRub(String partnumber, String discount, String dateOfRate);
 }

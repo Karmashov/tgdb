@@ -60,13 +60,6 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMessage(long chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
-        this.sendQueue.add(message);
-    }
-
     public void sendReply(Response response) {
         SendMessage message = new SendMessage();
         message.setChatId(response.getChatId());
@@ -74,26 +67,29 @@ public class Bot extends TelegramLongPollingBot {
         message.setReplyToMessageId(response.getMessageId());
 
         if (response instanceof QuestionResponse) {
-            InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-            List<InlineKeyboardButton> buttons = new ArrayList<>();
-            for (int i = 0; i < ((QuestionResponse) response).getOptions().length; i++) {
-                InlineKeyboardButton button = new InlineKeyboardButton()
-                        .setText(((QuestionResponse) response).getOptions()[i]);
-                if (i < ((QuestionResponse) response).getCallbackData().length) {
-                    button.setCallbackData(((QuestionResponse) response).getPosition() + ((QuestionResponse) response).getCallbackData()[i]);
-                } else {
-                    button.setCallbackData(((QuestionResponse) response).getOptions()[i]);
-                }
-                buttons.add(button);
-            }
-//            for (String option : ((QuestionResponse) response).getOptions()) {
-//                buttonsRow1.add(new InlineKeyboardButton().setText(option).setCallbackData(((QuestionResponse) response).getPosition() + option));
-//            }
-            List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-            rows.add(buttons);
-            keyboard.setKeyboard(rows);
+            InlineKeyboardMarkup keyboard = createKeyboard((QuestionResponse) response);
             message.setReplyMarkup(keyboard);
         }
         this.sendQueue.add(message);
+    }
+
+    private InlineKeyboardMarkup createKeyboard(QuestionResponse response) {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> buttons = new ArrayList<>();
+        for (int i = 0; i < response.getOptions().length; i++) {
+            InlineKeyboardButton button = new InlineKeyboardButton()
+                    .setText(response.getOptions()[i]);
+            if (i < response.getCallbackData().length) {
+                button.setCallbackData(response.getPosition() + response.getCallbackData()[i]);
+            } else {
+                button.setCallbackData(response.getOptions()[i]);
+            }
+            buttons.add(button);
+        }
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        rows.add(buttons);
+        keyboard.setKeyboard(rows);
+
+        return keyboard;
     }
 }
