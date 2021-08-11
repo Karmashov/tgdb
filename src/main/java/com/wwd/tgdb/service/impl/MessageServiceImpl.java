@@ -7,6 +7,7 @@ import com.wwd.tgdb.exception.UnknownCommandException;
 import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.service.MessageService;
 import com.wwd.tgdb.service.PriceService;
+import com.wwd.tgdb.service.SOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -27,16 +28,19 @@ public class MessageServiceImpl implements MessageService {
     private final PriceService priceService;
     private final UsdRateServiceImpl rateService;
     private final GPLUploadRepository uploadRepository;
+    private final SOService soService;
 
     @Autowired
     public MessageServiceImpl(Bot bot,
                               PriceService priceService,
                               UsdRateServiceImpl rateService,
-                              GPLUploadRepository uploadRepository) {
+                              GPLUploadRepository uploadRepository,
+                              SOService soService) {
         this.bot = bot;
         this.priceService = priceService;
         this.rateService = rateService;
         this.uploadRepository = uploadRepository;
+        this.soService = soService;
     }
 
     @Override
@@ -73,10 +77,9 @@ public class MessageServiceImpl implements MessageService {
 
     private Response doLogic(String[] command) throws EntityNotFoundException, UnknownCommandException {
         switch (command[0]) {
-//                case "/test": {
-//                    throwException(message);
-//                    break;
-//                }
+            case "/so": {
+                return soService.getSerials(command[1]);
+            }
             case "/price": {
                 return priceService.getPrice(command[1],
                         //TODO а если придет строка в command[2]?

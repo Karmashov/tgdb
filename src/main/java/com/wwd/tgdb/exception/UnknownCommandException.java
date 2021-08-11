@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @Data
 public class UnknownCommandException extends RuntimeException {
 
-    private static String message = "Не найдено";
+    private static String message = "Неизвестная команда";
     private Message tgMessage;
 
     public UnknownCommandException() {

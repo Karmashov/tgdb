@@ -104,6 +104,9 @@ public class MessageReceiver implements Runnable{
                 ex.setTgMessage(update.getMessage());
                 ex.printStackTrace();
                 bot.sendReply(new Response(update.getMessage().getChatId(), ex.getMessage(),  update.getMessage().getMessageId()));
+            } catch (NullPointerException ex) {
+                ex.printStackTrace();
+                bot.sendReply(new Response(update.getMessage().getChatId(), ex.getMessage(),  update.getMessage().getMessageId()));
             }
         } else {
             System.out.println(object.toString());

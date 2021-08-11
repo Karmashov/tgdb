@@ -29,3 +29,4 @@ bot:
 
 upload:
   path: "/home/ubuntu/java/uploads"
+#  path: "src/main/resources/upload"

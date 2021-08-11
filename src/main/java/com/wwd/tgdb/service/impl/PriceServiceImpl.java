@@ -63,11 +63,12 @@ public class PriceServiceImpl implements PriceService {
             GPLUpload upload = new GPLUpload();
             upload.setUploadDate(LocalDateTime.now());
             gplUploadRepository.save(upload);
+            file.delete();
+            return new Response("GPL загружен");
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
-
-        return new Response("GPL загружен");
+        return new Response("Файл не загружен");
     }
 
     @Override
