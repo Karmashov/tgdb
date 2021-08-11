@@ -79,6 +79,7 @@ public class MessageReceiver implements Runnable{
                         );
                     }
                 } else {
+                    System.out.println(update);
                     user = userRepository.existsUserByUserId(update.getMessage().getFrom().getId().toString()) ?
                             userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString()) : addUser(update);
 
