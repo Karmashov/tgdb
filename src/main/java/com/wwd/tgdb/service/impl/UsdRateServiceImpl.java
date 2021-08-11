@@ -1,5 +1,6 @@
 package com.wwd.tgdb.service.impl;
 
+import com.wwd.tgdb.dto.Response;
 import com.wwd.tgdb.repository.UsdRateRepository;
 import com.wwd.tgdb.service.UsdRateService;
 import com.wwd.tgdb.util.XMLCurrencyHandler;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -28,11 +30,23 @@ public class UsdRateServiceImpl implements UsdRateService {
     }
 
     @Override
-    public String downloadRates() {
+    public Response downloadRates() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate ld = LocalDate.now();
+
+
+        int shift = 1;
+        if (ld.getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
+            ld = ld.minusDays(1);
+        } else if (ld.getDayOfWeek().equals(DayOfWeek.SUNDAY)) {
+            ld = ld.minusDays(2);
+        } else if (ld.getDayOfWeek().equals(DayOfWeek.MONDAY)) {
+            ld = ld.minusDays(2);
+            shift = 3;
+        }
         String today = ld.format(formatter);
-        String tomorrow = ld.plusDays(1).format(formatter);
+        String tomorrow = ld.plusDays(shift).format(formatter);
+
         try {
             URL url = new URL("http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" +
                     today + "&date_req2=" + tomorrow + "&VAL_NM_RQ=R01235");
@@ -48,7 +62,7 @@ public class UsdRateServiceImpl implements UsdRateService {
             e.printStackTrace();
         }
 
-        return checkRates(ld);
+        return new Response(checkRates(ld));
     }
 
     private String checkRates(LocalDate ld) {

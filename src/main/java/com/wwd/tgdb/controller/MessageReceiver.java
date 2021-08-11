@@ -1,6 +1,9 @@
 package com.wwd.tgdb.controller;
 
 import com.wwd.tgdb.bot.Bot;
+import com.wwd.tgdb.dto.Response;
+import com.wwd.tgdb.exception.IllegalFormatException;
+import com.wwd.tgdb.exception.UnauthorizedAccessException;
 import com.wwd.tgdb.model.User;
 import com.wwd.tgdb.model.enumerated.UserRole;
 import com.wwd.tgdb.repository.UserRepository;
@@ -56,26 +59,54 @@ public class MessageReceiver implements Runnable{
     private void analyze(Object object) {
         if (object instanceof Update) {
             Update update = (Update) object;
+            try {
+                User user;
 
-            User user;
-            if (userRepository.existsUserByUserId(update.getMessage().getFrom().getId().toString())) {
-                user = userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString());
-            } else {
-                user = addUser(update);
-            }
+                if (update.hasCallbackQuery()) {
+                    if (!update.getCallbackQuery().getData().equalsIgnoreCase("нет")) {
+                        messageService.solveProblem(update.getCallbackQuery());
+                    } else {
+                        messageService.deleteKeyboard(
+                                update.getCallbackQuery().getMessage().getChatId(),
+                                update.getCallbackQuery().getMessage().getMessageId()
+                        );
+                        messageService.editMessageText(
+                                update.getCallbackQuery().getMessage().getChatId(),
+                                update.getCallbackQuery().getMessage().getMessageId(),
+                                update.getCallbackQuery().getMessage().getText().substring(
+                                        0, update.getCallbackQuery().getMessage().getText().indexOf("\n")
+                                )
+                        );
+                    }
+                } else {
+                    user = userRepository.existsUserByUserId(update.getMessage().getFrom().getId().toString()) ?
+                            userRepository.findFirstByUserId(update.getMessage().getFrom().getId().toString()) : addUser(update);
 
-            if (update.getMessage().getText() != null && update.getMessage().getText().startsWith("/")) {
-                if (user.getUserRole().equals(UserRole.UNKNOWN)) {
-                    bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
-                } else {
-                    messageService.getMessage(update);
+                    if (update.getMessage().hasText() && update.getMessage().getText().startsWith("/")) {
+                        if (!user.getUserRole().equals(UserRole.UNKNOWN)) {
+                            messageService.getMessage(update.getMessage());
+                        } else {
+                            throw new UnauthorizedAccessException();
+                        }
+                    } else if (update.getMessage().hasDocument()) {
+                        if (user.getUserRole().equals(UserRole.ADMIN)) {
+                            fileService.getFile(update);
+                        } else {
+                            throw new UnauthorizedAccessException();
+                        }
+                    }
                 }
-            } else if (update.getMessage().getDocument() != null) {
-                if (user.getUserRole().equals(UserRole.ADMIN)) {
-                    fileService.getFile(update);
-                } else {
-                    bot.sendMessage(update.getMessage().getChatId().toString(), "Access Denied");
-                }
+            } catch (IllegalFormatException ex) {
+                ex.setTgMessage(update.getMessage());
+                ex.printStackTrace();
+                bot.sendReply(new Response(update.getMessage().getChatId(), ex.getMessage(),  update.getMessage().getMessageId()));
+            } catch (UnauthorizedAccessException ex) {
+                ex.setTgMessage(update.getMessage());
+                ex.printStackTrace();
+                bot.sendReply(new Response(update.getMessage().getChatId(), ex.getMessage(),  update.getMessage().getMessageId()));
+            } catch (NullPointerException ex) {
+                ex.printStackTrace();
+                bot.sendReply(new Response(update.getMessage().getChatId(), ex.getMessage(),  update.getMessage().getMessageId()));
             }
         } else {
             System.out.println(object.toString());

@@ -3,6 +3,7 @@ package com.wwd.tgdb.model.GPL;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -25,4 +26,6 @@ public class Price {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "partnumber", cascade = CascadeType.ALL)
+    private List<RusSO> serials;
 }

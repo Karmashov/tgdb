@@ -5,6 +5,7 @@ import com.wwd.tgdb.repository.MessageRepository;
 import com.wwd.tgdb.repository.UserRepository;
 import com.wwd.tgdb.service.AdminService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +16,7 @@ public class AdminServiceImpl implements AdminService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
 
-//    @Autowired
+    @Autowired
     public AdminServiceImpl(ChatRepository chatRepository,
                             MessageRepository messageRepository,
                             UserRepository userRepository) {

@@ -1,7 +1,11 @@
 package com.wwd.tgdb.service.impl;
 
+import com.wwd.tgdb.dto.QuestionResponse;
+import com.wwd.tgdb.dto.Response;
+import com.wwd.tgdb.exception.EntityNotFoundException;
 import com.wwd.tgdb.model.GPL.GPLUpload;
 import com.wwd.tgdb.model.GPL.Price;
+import com.wwd.tgdb.model.UsdRate;
 import com.wwd.tgdb.repository.CategoryRepository;
 import com.wwd.tgdb.repository.GPLUploadRepository;
 import com.wwd.tgdb.repository.PriceRepository;
@@ -22,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class PriceServiceImpl implements PriceService {
@@ -45,7 +50,7 @@ public class PriceServiceImpl implements PriceService {
     }
 
     @Override
-    public String uploadGPL(File file) {
+    public Response uploadGPL(File file) {
         try {
             SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
             XMLItemHandler handler = new XMLItemHandler(priceRepository, categoryRepository);
@@ -58,67 +63,69 @@ public class PriceServiceImpl implements PriceService {
             GPLUpload upload = new GPLUpload();
             upload.setUploadDate(LocalDateTime.now());
             gplUploadRepository.save(upload);
+            file.delete();
+            return new Response("GPL загружен");
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
-
-        //@TODO Сделать Response
-        return "GPL uploaded";
+        return new Response("Файл не загружен");
     }
 
     @Override
-    public String getPrice(String partnumber) {
+    public Response getPrice(String partnumber, int discount, LocalDate dateOfRate) throws EntityNotFoundException {
+        BigDecimal price = getResultPrice(partnumber, discount);
+
+        String response;
+        if (dateOfRate != null) {
+            response = "Цена " + partnumber + " со скидкой " + discount + "%, по курсу на ";
+            response = getRubPrice(price, dateOfRate, response);
+        } else if (discount != 0) {
+            response = "Цена " + partnumber + " со скидкой " + discount + "%: $" + price;
+            return new QuestionResponse(response + "\n\nИли дать цену в ₽?",
+                    new String[]{"Да", "Нет"},
+                    new String[]{"сегодня"},
+                    3);
+        } else {
+            response = "GPL " + partnumber + ": $" + price;
+        }
+
+        return new Response(response);
+    }
+
+    private String getRubPrice(BigDecimal price, LocalDate dateOfRate, String response) {
+        UsdRate rate = getRates(dateOfRate);
+
+        price = price.multiply(BigDecimal.valueOf(rate.getRate())).setScale(2, RoundingMode.UP);
+
+        LocalDate date = rate.getDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+        if (!rate.getDate().equals(dateOfRate)) {
+            //TODO эксепшен
+            return "Курс на " + dateOfRate.format(formatter) + " не найден.\n\n" +
+                    response + date.format(formatter) + ": ₽" + price;
+        } else if (rate.getDate().equals(dateOfRate) && dateOfRate.equals(LocalDate.now())) {
+            return response + "сегодня: ₽" + price;
+        } else {
+            return response + "завтра: ₽" + price;
+        }
+    }
+
+    private BigDecimal getResultPrice(String partnumber, int discount) throws EntityNotFoundException {
         Price result;
-        //@TODO Exception, вынести общую логику
         if (priceRepository.existsByPartnumber(partnumber)) {
             result = priceRepository.findFirstByPartnumber(partnumber);
         } else {
-            return "Не найдено";
+            throw new EntityNotFoundException();
         }
-        return result.getPriceUsd().toString();
+
+        return BigDecimal.valueOf(result.getPriceUsd() * (100 + discount) / 100)
+                .setScale(2, RoundingMode.UP);
     }
 
-    @Override
-    public String getPriceWithDiscount(String partnumber, String discount) {
-        Price result;
-        //@TODO Exception, вынести общую логику
-        if (priceRepository.existsByPartnumber(partnumber)) {
-            result = priceRepository.findFirstByPartnumber(partnumber);
-        } else {
-            return "Не найдено";
-        }
-        BigDecimal price = BigDecimal.valueOf(
-                result.getPriceUsd() * (100 - Integer.parseInt(discount.replaceAll("-", ""))) / 100
-                ).setScale(2, RoundingMode.UP);
-        return price.toString();
-    }
-
-    @Override
-    public String getPriceRub(String partnumber, String discount, String dateOfRate) {
-        BigDecimal price = new BigDecimal(getPriceWithDiscount(partnumber, discount));
-
-        LocalDate date = LocalDate.now();
-        if (dateOfRate.equalsIgnoreCase("завтра")) {
-            date = date.plusDays(1);
-        }
-
-        double rate = getRates(date);
-        if (rate != 0) {
-            return price.multiply(BigDecimal.valueOf(rate)).setScale(2, RoundingMode.UP).toString();
-        } else {
-            return "Курс отсутствует на сайте ЦБ";
-        }
-    }
-
-    private double getRates(LocalDate date) {
-        if (rateRepository.existsByDate(date)) {
-            return rateRepository.findFirstByDate(date).getRate();
-        } else {
-            String result = rateService.downloadRates();
-            if (result.contains(date.toString())) {
-                return getRates(date);
-            }
-            return 0;
-        }
+    private UsdRate getRates(LocalDate date) {
+        rateService.downloadRates();
+        return rateRepository.existsByDate(date) ?
+                rateRepository.findFirstByDate(date) : rateRepository.findTopByOrderByIdDesc();
     }
 }

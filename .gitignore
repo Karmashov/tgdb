@@ -31,4 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### Other ###
+README.md
 /scripts/
