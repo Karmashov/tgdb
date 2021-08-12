@@ -30,3 +30,9 @@ bot:
 upload:
   path: "/home/ubuntu/java/uploads"
 #  path: "src/main/resources/upload"
+
+rrc:
+  login: ${RRC_LOGIN}
+  password: ${RRC_PASSWORD}
+  code: ${RRC_CODE}
+  id: ${RRC_ID}
