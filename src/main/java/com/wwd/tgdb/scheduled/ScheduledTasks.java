@@ -1,9 +1,9 @@
 package com.wwd.tgdb.scheduled;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.stereotype.Service;
 
-@EnableScheduling
+@Service
 public class ScheduledTasks {
     @Value("${rrc.login}")
     private String rrcLogin;
@@ -25,6 +25,7 @@ public class ScheduledTasks {
 
         System.out.println(uploadPath);
         System.out.println(rrcId);
+        System.out.println(command);
 
 //        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
 //
