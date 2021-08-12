@@ -22,9 +22,11 @@ public class ScheduledTasks {
                 rrcLogin + "&pass=" +
                 rrcPassword + "'";
 
+        System.out.println(command);
+
         ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
 
-//        processBuilder.directory(new File(uploadPath));
+        processBuilder.directory(new File(uploadPath));
 
         Process process = null;
         try {
@@ -34,13 +36,13 @@ public class ScheduledTasks {
         } catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
         }
-        int exitCode = process.exitValue();
+//        int exitCode = process.exitValue();
 
-        System.out.println(exitCode);
+        System.out.println(process.exitValue());
 
         System.out.println(process);
 
-//        process.destroy();
+        process.destroy();
 
         System.out.println(process);
 
