@@ -14,7 +14,7 @@ public class ScheduledTasks {
     @Value("${rrc.id}")
     private String rrcId;
     @Value("${upload.path}")
-    private String uploadPath;
+    private static String uploadPath;
 
     public void getGpl() {
         String command = "curl 'https://b2b.rrc.ru/personal/xml?code=" +
