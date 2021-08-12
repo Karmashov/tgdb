@@ -29,8 +29,9 @@ public class ScheduledTasks {
         Process process = null;
         try {
             process = processBuilder.start();
-            process.destroy();
-        } catch (IOException exception) {
+            Thread.sleep(5000);
+//            process.destroy();
+        } catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
         }
         int exitCode = process.exitValue();
