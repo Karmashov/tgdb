@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 @SpringBootApplication
@@ -24,8 +25,11 @@ public class TgdbApplication {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 	}
 
-	@Scheduled(fixedDelay = 5000)
+	@Scheduled(fixedDelay = 300_000)
 	public void scheduledTask() {
-		ScheduledTasks.getGpl();
+		ScheduledTasks tasks = new ScheduledTasks();
+
+		System.out.println(LocalDateTime.now());
+		tasks.getGpl();
 	}
 }
