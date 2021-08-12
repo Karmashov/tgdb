@@ -18,8 +18,8 @@ public class ScheduledTasks {
     public void getGpl() {
         String command = "curl 'https://b2b.rrc.ru/personal/xml?code=" +
                 rrcCode + "&id=" +
-                rrcId + "&login=" +
-                rrcLogin + "&pass=" +
+                rrcId + /*"&login=" +
+                rrcLogin +*/ "&pass=" +
                 rrcPassword + "'";
 
 //        System.out.println(command);
