@@ -2,23 +2,21 @@ package com.wwd.tgdb.scheduled;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 @EnableScheduling
 public class ScheduledTasks {
     @Value("${rrc.login}")
-    private String rrcLogin;
+    private static String rrcLogin;
     @Value("${rrc.password}")
-    private String rrcPassword;
+    private static String rrcPassword;
     @Value("${rrc.code}")
-    private String rrcCode;
+    private static String rrcCode;
     @Value("${rrc.id}")
-    private String rrcId;
+    private static String rrcId;
     @Value("${upload.path}")
-    private String uploadPath;
+    private static String uploadPath;
 
-    @Scheduled(fixedDelay = 5000)
-    public void getGpl() {
+    public static void getGpl() {
         String command = "curl 'https://b2b.rrc.ru/personal/xml?code=" +
                 rrcCode + "&id=" +
                 rrcId + "&login=" +

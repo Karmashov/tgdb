@@ -1,5 +1,6 @@
 package com.wwd.tgdb;
 
+import com.wwd.tgdb.scheduled.ScheduledTasks;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -7,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 @SpringBootApplication
@@ -26,6 +26,6 @@ public class TgdbApplication {
 
 	@Scheduled(fixedDelay = 5000)
 	public void scheduledTask() {
-		System.out.println(LocalDateTime.now());
+		ScheduledTasks.getGpl();
 	}
 }
