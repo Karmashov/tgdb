@@ -29,6 +29,7 @@ public class ScheduledTasks {
         Process process = null;
         try {
             process = processBuilder.start();
+            process.destroy();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
