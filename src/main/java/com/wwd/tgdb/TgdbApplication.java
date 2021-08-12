@@ -1,5 +1,6 @@
 package com.wwd.tgdb;
 
+import com.wwd.tgdb.scheduled.ScheduledTasks;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,6 +16,7 @@ public class TgdbApplication {
 	public static void main(String[] args) {
 		ApiContextInitializer.init();
 		SpringApplication.run(TgdbApplication.class, args);
+		SpringApplication.run(ScheduledTasks.class, args);
 	}
 
 	@PostConstruct
