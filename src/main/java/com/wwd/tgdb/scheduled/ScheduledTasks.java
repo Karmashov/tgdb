@@ -22,11 +22,11 @@ public class ScheduledTasks {
                 rrcLogin + "&pass=" +
                 rrcPassword + "'";
 
-        System.out.println(command);
+//        System.out.println(command);
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
-        processBuilder.directory(new File("./ubuntu/java/uploads"));
+        processBuilder.directory(new File("./java/uploads"));
 
         Process process = null;
         try {
