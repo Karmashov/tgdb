@@ -26,7 +26,7 @@ public class ScheduledTasks {
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
-        processBuilder.directory(new File("./1.txt"));
+        processBuilder.directory(new File("/home"));
 
         Process process = null;
         try {
