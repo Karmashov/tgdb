@@ -24,6 +24,7 @@ public class ScheduledTasks {
                 rrcPassword + "'";
 
         System.out.println(uploadPath);
+        System.out.println(rrcId);
 
 //        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
 //
