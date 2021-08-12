@@ -1,14 +1,11 @@
 package com.wwd.tgdb;
 
-import com.wwd.tgdb.scheduled.ScheduledTasks;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
 import java.util.TimeZone;
 
 @SpringBootApplication
@@ -23,13 +20,5 @@ public class TgdbApplication {
 	@PostConstruct
 	public void init() {
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-	}
-
-	@Scheduled(fixedDelay = 300_000)
-	public void scheduledTask() {
-		ScheduledTasks tasks = new ScheduledTasks();
-
-		System.out.println(LocalDateTime.now());
-		tasks.getGpl();
 	}
 }

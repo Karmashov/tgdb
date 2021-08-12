@@ -6,6 +6,7 @@ import com.wwd.tgdb.exception.IllegalFormatException;
 import com.wwd.tgdb.model.GPL.RusSO;
 import com.wwd.tgdb.repository.PriceRepository;
 import com.wwd.tgdb.repository.RusSORepository;
+import com.wwd.tgdb.scheduled.ScheduledTasks;
 import com.wwd.tgdb.service.FileService;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -17,11 +18,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.io.*;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -29,6 +32,7 @@ import java.util.zip.ZipInputStream;
 @Service
 public class FileServiceImpl implements FileService {
     private final Bot bot;
+    private final ScheduledTasks tasks;
     private final PriceServiceImpl priceServiceImpl;
     private final PriceRepository priceRepository;
     private final RusSORepository soRepository;
@@ -37,10 +41,12 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     public FileServiceImpl(Bot bot,
+                           ScheduledTasks tasks,
                            PriceServiceImpl priceServiceImpl,
                            PriceRepository priceRepository,
                            RusSORepository soRepository) {
         this.bot = bot;
+        this.tasks = tasks;
         this.priceServiceImpl = priceServiceImpl;
         this.priceRepository = priceRepository;
         this.soRepository = soRepository;
@@ -175,5 +181,14 @@ public class FileServiceImpl implements FileService {
             e.printStackTrace();
         }
         return file;
+    }
+
+    @Scheduled(fixedDelay = 300_000)
+//    @Scheduled(fixedDelay = 5000)
+    public void scheduledTask() {
+//		ScheduledTasks tasks = new ScheduledTasks();
+
+        System.out.println(LocalDateTime.now());
+        tasks.getGpl();
     }
 }
