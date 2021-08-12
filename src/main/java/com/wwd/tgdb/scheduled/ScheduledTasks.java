@@ -3,9 +3,6 @@ package com.wwd.tgdb.scheduled;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.io.File;
-import java.io.IOException;
-
 @EnableScheduling
 public class ScheduledTasks {
     @Value("${rrc.login}")
@@ -26,25 +23,27 @@ public class ScheduledTasks {
                 rrcLogin + "&pass=" +
                 rrcPassword + "'";
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        System.out.println(uploadPath);
 
-        processBuilder.directory(new File(uploadPath));
-
-        Process process = null;
-        try {
-            process = processBuilder.start();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        int exitCode = process.exitValue();
-
-        System.out.println(exitCode);
-
-        System.out.println(process);
-
-        process.destroy();
-
-        System.out.println(process);
+//        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+//
+//        processBuilder.directory(new File(uploadPath));
+//
+//        Process process = null;
+//        try {
+//            process = processBuilder.start();
+//        } catch (IOException exception) {
+//            exception.printStackTrace();
+//        }
+//        int exitCode = process.exitValue();
+//
+//        System.out.println(exitCode);
+//
+//        System.out.println(process);
+//
+//        process.destroy();
+//
+//        System.out.println(process);
 
 //        System.out.println(command);
     }
