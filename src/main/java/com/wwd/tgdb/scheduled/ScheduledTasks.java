@@ -4,9 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.io.File;
-import java.io.IOException;
-
 @EnableScheduling
 public class ScheduledTasks {
     @Value("${rrc.login}")
@@ -20,7 +17,7 @@ public class ScheduledTasks {
     @Value("${upload.path}")
     private String uploadPath;
 
-    @Scheduled(fixedDelay = 1800000)
+    @Scheduled(fixedDelay = 5000)
     public void getGpl() {
         String command = "curl 'https://b2b.rrc.ru/personal/xml?code=" +
                 rrcCode + "&id=" +
@@ -28,24 +25,26 @@ public class ScheduledTasks {
                 rrcLogin + "&pass=" +
                 rrcPassword + "'";
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+//        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+//
+//        processBuilder.directory(new File(uploadPath + "/"));
+//
+//        Process process = null;
+//        try {
+//            process = processBuilder.start();
+//        } catch (IOException exception) {
+//            exception.printStackTrace();
+//        }
+//        int exitCode = process.exitValue();
 
-        processBuilder.directory(new File(uploadPath + "/"));
+//        System.out.println(exitCode);
+//
+//        System.out.println(process);
+//
+//        process.destroy();
+//
+//        System.out.println(process);
 
-        Process process = null;
-        try {
-            process = processBuilder.start();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
-        int exitCode = process.exitValue();
-
-        System.out.println(exitCode);
-
-        System.out.println(process);
-
-        process.destroy();
-
-        System.out.println(process);
+        System.out.println(command);
     }
 }
