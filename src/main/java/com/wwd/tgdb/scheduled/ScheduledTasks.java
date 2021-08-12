@@ -38,7 +38,7 @@ public class ScheduledTasks {
 
         System.out.println(process);
 
-        process.destroy();
+//        process.destroy();
 
         System.out.println(process);
 
