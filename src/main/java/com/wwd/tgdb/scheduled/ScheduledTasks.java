@@ -29,7 +29,7 @@ public class ScheduledTasks {
         Process process = null;
         try {
             process = processBuilder.start();
-            Thread.sleep(5000);
+            process.waitFor();
 //            process.destroy();
         } catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
