@@ -17,19 +17,22 @@ public class ScheduledTasks {
     public void getGpl() {
         String command = "curl 'https://b2b.rrc.ru/personal/xml?code=" +
                 rrcCode + "&id=" +
-                rrcId + /*"&login=" +
-                rrcLogin +*/ "&pass=" +
+                rrcId + "&login=" +
+                rrcLogin + "&pass=" +
                 rrcPassword + "'";
 
 //        System.out.println(command);
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
 
-//        processBuilder.directory(new File("/home"));
+//        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+//
+//        processBuilder.directory(new File("D:/NewFolder/"));
 
+//        Process process = null;
         Process process = null;
         try {
-            process = processBuilder.start();
+            process = Runtime.getRuntime().exec(command);
+//            process = processBuilder.start();
             InputStream inputStream = process.getInputStream();
             System.out.println(Arrays.toString(inputStream.readAllBytes()));
             process.waitFor();
@@ -44,8 +47,6 @@ public class ScheduledTasks {
         System.out.println(process);
 
         process.destroy();
-
-        System.out.println(process);
 
 //        System.out.println(command);
     }
