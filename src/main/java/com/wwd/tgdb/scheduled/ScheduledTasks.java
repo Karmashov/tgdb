@@ -2,7 +2,6 @@ package com.wwd.tgdb.scheduled;
 
 import lombok.Data;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -26,7 +25,7 @@ public class ScheduledTasks {
 
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
-        processBuilder.directory(new File("/home"));
+//        processBuilder.directory(new File("/home"));
 
         Process process = null;
         try {
