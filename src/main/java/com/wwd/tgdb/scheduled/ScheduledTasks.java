@@ -1,11 +1,11 @@
 package com.wwd.tgdb.scheduled;
 
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 
 @Data
 public class ScheduledTasks {
@@ -31,6 +31,8 @@ public class ScheduledTasks {
         Process process = null;
         try {
             process = processBuilder.start();
+            InputStream inputStream = process.getInputStream();
+            System.out.println(Arrays.toString(inputStream.readAllBytes()));
             process.waitFor();
 //            process.destroy();
         } catch (IOException | InterruptedException exception) {
