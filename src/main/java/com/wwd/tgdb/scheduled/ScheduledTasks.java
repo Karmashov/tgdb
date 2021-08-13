@@ -34,19 +34,19 @@ public class ScheduledTasks {
 
 //        commands.add(downloadCommand);
 
-        ProcessBuilder processBuilder = new ProcessBuilder(generateCommand.split(" "));
+//        ProcessBuilder processBuilder = new ProcessBuilder(generateCommand.split(" "));
         ProcessBuilder processBuilder1 = new ProcessBuilder(downloadCommand.split(" "));
 
 //        processBuilder.directory(new File("D:/NewFolder/"));
-        processBuilder.redirectInput(new File("D:/NewFolder/1.txt"));
-        processBuilder1.redirectInput(new File("D:/NewFolder/gpl.xml"));
+//        processBuilder.redirectInput(new File("/home/ubuntu/java/uploads/1.txt"));
+        processBuilder1.redirectInput(new File("/home/ubuntu/java/uploads/gpl.xml"));
 //        processBuilder.redirectOutput(new File("D:/NewFolder/1.txt"));
 
-        Process process = null;
+//        Process process = null;
         Process process1 = null;
         try {
 //            process = Runtime.getRuntime().exec(generateCommand);
-            process = processBuilder.start();
+//            process = processBuilder.start();
 //            InputStream inputStream = process.getInputStream();
 //            System.out.println(Arrays.toString(inputStream.readAllBytes()));
 
@@ -55,7 +55,7 @@ public class ScheduledTasks {
 //            while ((line = br.readLine()) != null) {
 //                System.out.println(line);
 //            }
-            process.waitFor();
+//            process.waitFor();
 
             process1 = processBuilder1.start();
             process1.waitFor();
@@ -69,11 +69,11 @@ public class ScheduledTasks {
         }
 //        int exitCode = process.exitValue();
 
-        System.out.println(process.exitValue());
+        System.out.println(process1.exitValue());
 
-        System.out.println(process);
+        System.out.println(process1);
 
-        process.destroy();
+        process1.destroy();
 
 //        System.out.println(command);
     }
