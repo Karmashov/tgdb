@@ -94,7 +94,7 @@ public class MessageServiceImpl implements MessageService {
             }
             case "/gpl": {
                 return new Response("GPL был загружен: " +
-                        uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                        uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")));
             }
 //                case "/get": {
 //                    //TODO получение товара
