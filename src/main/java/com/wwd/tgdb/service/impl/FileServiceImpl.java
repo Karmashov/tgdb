@@ -184,8 +184,8 @@ public class FileServiceImpl implements FileService {
         return file;
     }
 
-    @Scheduled(fixedDelay = 5_000)
-//    @Scheduled(fixedDelay = 5000)
+//    @Scheduled(fixedDelay = 5_000)
+    @Scheduled(cron = "0 45 19 * * *")
     public void scheduledTask() {
         String fileName = "gpl-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".xml";
         File file = new File(uploadPath + "/" + fileName);
