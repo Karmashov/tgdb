@@ -25,6 +25,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import java.io.*;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -183,12 +184,18 @@ public class FileServiceImpl implements FileService {
         return file;
     }
 
-    @Scheduled(fixedDelay = 300_000)
+    @Scheduled(fixedDelay = 5_000)
 //    @Scheduled(fixedDelay = 5000)
     public void scheduledTask() {
-//		ScheduledTasks tasks = new ScheduledTasks();
-
-        System.out.println(LocalDateTime.now());
-        tasks.getGpl();
+        String fileName = "gpl-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".xml";
+        File file = new File(uploadPath + "/" + fileName);
+        if (file.exists()) {
+            System.out.println(file.exists());
+//            priceServiceImpl.uploadGPL(file);
+        }
+////		ScheduledTasks tasks = new ScheduledTasks();
+//
+//        System.out.println(LocalDateTime.now());
+//        tasks.getGpl();
     }
 }
