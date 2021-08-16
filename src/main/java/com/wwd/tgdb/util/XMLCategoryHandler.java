@@ -51,10 +51,12 @@ public class XMLCategoryHandler extends DefaultHandler {
 //                            " - " + sectionCode +
 //                            " - " + depthLevel);
 
-                    Category category = new Category();
-                    category.setName(name);
-                    category.setSectionId(code);
-                    categoryRepository.save(category);
+                    if (!categoryRepository.existsByName(name)) {
+                        Category category = new Category();
+                        category.setName(name);
+                        category.setSectionId(code);
+                        categoryRepository.save(category);
+                    }
                 }
                 id = null;
                 code = null;

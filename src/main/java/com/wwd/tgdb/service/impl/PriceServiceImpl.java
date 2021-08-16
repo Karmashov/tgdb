@@ -56,9 +56,9 @@ public class PriceServiceImpl implements PriceService {
             XMLItemHandler handler = new XMLItemHandler(priceRepository, categoryRepository);
             XMLCategoryHandler categoryHandler = new XMLCategoryHandler(categoryRepository);
 
-            categoryRepository.deleteAll();
+//            categoryRepository.deleteAll();
             parser.parse(file, categoryHandler);
-            priceRepository.deleteAll();
+//            priceRepository.deleteAll();
             parser.parse(file, handler);
             GPLUpload upload = new GPLUpload();
             upload.setUploadDate(LocalDateTime.now());

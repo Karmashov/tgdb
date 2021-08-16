@@ -6,6 +6,8 @@ import com.wwd.tgdb.repository.PriceRepository;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.time.LocalDate;
+
 public class XMLItemHandler extends DefaultHandler {
     private PriceRepository priceRepository;
     private CategoryRepository categoryRepository;
@@ -51,13 +53,19 @@ public class XMLItemHandler extends DefaultHandler {
 //                            " - " + vendor +
 //                            " - " + section_code +
 //                            " - " + price_usd);
+                    Price price = priceRepository.existsByPartnumber(partnumber) ?
+                            priceRepository.findFirstByPartnumber(partnumber) :
+                            new Price();
 
-                    Price price = new Price();
-                    price.setName(name);
-                    price.setPartnumber(partnumber);
-                    price.setCategory(categoryRepository.findFirstBySectionId(section_code));
-                    price.setPriceUsd(Double.parseDouble(price_usd));
-
+                    if (price.getPartnumber() == null) {
+                        price.setName(name);
+                        price.setPartnumber(partnumber);
+                        price.setCategory(categoryRepository.findFirstBySectionId(section_code));
+                        price.setPriceUsd(Double.parseDouble(price_usd));
+                    } else if (price.getPriceUsd() != Double.parseDouble(price_usd)) {
+                        price.setPriceUsd(Double.parseDouble(price_usd));
+                        price.setChanged(LocalDate.now());
+                    }
                     priceRepository.save(price);
 
                     name = null;

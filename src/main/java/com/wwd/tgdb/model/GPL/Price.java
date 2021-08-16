@@ -3,6 +3,7 @@ package com.wwd.tgdb.model.GPL;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -21,6 +22,8 @@ public class Price {
     private String vendor;
 
     private Double priceUsd;
+
+    private LocalDate changed;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")

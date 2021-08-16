@@ -6,7 +6,6 @@ import com.wwd.tgdb.exception.IllegalFormatException;
 import com.wwd.tgdb.model.GPL.RusSO;
 import com.wwd.tgdb.repository.PriceRepository;
 import com.wwd.tgdb.repository.RusSORepository;
-import com.wwd.tgdb.scheduled.ScheduledTasks;
 import com.wwd.tgdb.service.FileService;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -33,7 +32,6 @@ import java.util.zip.ZipInputStream;
 @Service
 public class FileServiceImpl implements FileService {
     private final Bot bot;
-    private final ScheduledTasks tasks;
     private final PriceServiceImpl priceServiceImpl;
     private final PriceRepository priceRepository;
     private final RusSORepository soRepository;
@@ -42,12 +40,10 @@ public class FileServiceImpl implements FileService {
 
     @Autowired
     public FileServiceImpl(Bot bot,
-                           ScheduledTasks tasks,
                            PriceServiceImpl priceServiceImpl,
                            PriceRepository priceRepository,
                            RusSORepository soRepository) {
         this.bot = bot;
-        this.tasks = tasks;
         this.priceServiceImpl = priceServiceImpl;
         this.priceRepository = priceRepository;
         this.soRepository = soRepository;
@@ -184,18 +180,13 @@ public class FileServiceImpl implements FileService {
         return file;
     }
 
-//    @Scheduled(fixedDelay = 5_000)
     @Scheduled(cron = "0 10 2 * * *")
-    public void scheduledTask() {
+    public Response checkGPL() {
         String fileName = "gpl-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")) + ".xml";
         File file = new File(uploadPath + "/" + fileName);
         if (file.exists()) {
-//            System.out.println(file.exists());
-            priceServiceImpl.uploadGPL(file);
+            return priceServiceImpl.uploadGPL(file);
         }
-////		ScheduledTasks tasks = new ScheduledTasks();
-//
-//        System.out.println(LocalDateTime.now());
-//        tasks.getGpl();
+        return new Response("Файл не загружен");
     }
 }

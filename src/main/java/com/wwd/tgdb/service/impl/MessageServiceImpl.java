@@ -5,6 +5,7 @@ import com.wwd.tgdb.dto.Response;
 import com.wwd.tgdb.exception.EntityNotFoundException;
 import com.wwd.tgdb.exception.UnknownCommandException;
 import com.wwd.tgdb.repository.GPLUploadRepository;
+import com.wwd.tgdb.service.FileService;
 import com.wwd.tgdb.service.MessageService;
 import com.wwd.tgdb.service.PriceService;
 import com.wwd.tgdb.service.SOService;
@@ -26,6 +27,7 @@ public class MessageServiceImpl implements MessageService {
 
     private final Bot bot;
     private final PriceService priceService;
+    private final FileService fileService;
     private final UsdRateServiceImpl rateService;
     private final GPLUploadRepository uploadRepository;
     private final SOService soService;
@@ -33,11 +35,13 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     public MessageServiceImpl(Bot bot,
                               PriceService priceService,
+                              FileService fileService,
                               UsdRateServiceImpl rateService,
                               GPLUploadRepository uploadRepository,
                               SOService soService) {
         this.bot = bot;
         this.priceService = priceService;
+        this.fileService = fileService;
         this.rateService = rateService;
         this.uploadRepository = uploadRepository;
         this.soService = soService;
@@ -95,6 +99,9 @@ public class MessageServiceImpl implements MessageService {
             case "/gpl": {
                 return new Response("GPL был загружен: " +
                         uploadRepository.findTopByOrderByIdDesc().getUploadDate().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")));
+            }
+            case "/checkgpl": {
+                return fileService.checkGPL();
             }
 //                case "/get": {
 //                    //TODO получение товара
