@@ -61,7 +61,12 @@ public class XMLItemHandler extends DefaultHandler {
                         price.setName(name);
                         price.setPartnumber(partnumber);
                         price.setCategory(categoryRepository.findFirstBySectionId(section_code));
-                        price.setPriceUsd(Double.parseDouble(price_usd));
+                        try {
+                            price.setPriceUsd(Double.parseDouble(price_usd));
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                            System.out.println("Ошибка в " + name + ". Проблема с ценой " + price_usd);
+                        }
                     } else if (price.getPriceUsd() != Double.parseDouble(price_usd)) {
                         price.setPriceUsd(Double.parseDouble(price_usd));
                         price.setChanged(LocalDate.now());

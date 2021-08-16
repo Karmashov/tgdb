@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class UnauthorizedAccessException extends RuntimeException {
-    private static String message = "Не санкционированный доступ";
+    private static String message = "Несанкционированный доступ";
     private Message tgMessage;
 
     public UnauthorizedAccessException() {
