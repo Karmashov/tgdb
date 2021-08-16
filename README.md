@@ -10,10 +10,9 @@ Currently implemented:
 - [X] Getting the price of a product with discount, using a command `/price partnumber -57` where `partnumber` is a model of a product and `-57` is a value of discount in percents.
 - [X] Loading currency rates of the Central Bank of Russia.
 - [X] Getting the price in RUB.
+- [X] Automatic receipt of a distributor's price list from the Internet without sending a file to Bot.
 
 In the plans:
-
-- [ ] Automatic receipt of a distributor's price list from the Internet without sending a file to Bot.
 - [ ] Keeping records of goods in the warehouse
 - [ ] Receiving goods to the warehouse.
 - [ ] Shipment of goods from the warehouse.
