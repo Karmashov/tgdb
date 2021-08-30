@@ -27,6 +27,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class PriceServiceImpl implements PriceService {
@@ -73,7 +74,24 @@ public class PriceServiceImpl implements PriceService {
 
     @Override
     public Response getPrice(String partnumber, int discount, LocalDate dateOfRate) throws EntityNotFoundException {
-        BigDecimal price = getResultPrice(partnumber, discount);
+        Price result;
+        if (priceRepository.existsByPartnumber(partnumber)) {
+            result = priceRepository.findFirstByPartnumber(partnumber);
+        } else if (priceRepository.existsByPartnumberContaining(partnumber)) {
+            List<Price> search = priceRepository.findByPartnumberContaining(partnumber);
+            String[] options = new String[search.size()];
+            String[] callbackData = new String[search.size()];
+            for (int i = 0; i < search.size(); i++) {
+                options[i] = search.get(i).getPartnumber();
+                callbackData[i] = search.get(i).getPartnumber();
+            }
+            return new QuestionResponse("Вы имели ввиду:", options, callbackData, 1);
+        } else {
+            throw new EntityNotFoundException();
+        }
+
+        BigDecimal price = BigDecimal.valueOf(result.getPriceUsd() * (100 + discount) / 100)
+                .setScale(2, RoundingMode.UP);
 
         String response;
         if (dateOfRate != null) {
@@ -90,6 +108,29 @@ public class PriceServiceImpl implements PriceService {
         }
 
         return new Response(response);
+    }
+
+    @Override
+    public Response find(String substring) {
+        List<Price> result = priceRepository.findByPartnumberContaining(substring);
+        String response = "";
+        for (Price price : result) {
+            response += price.getPartnumber() + ", ";
+        }
+        System.out.println(priceRepository.existsByPartnumberContaining(substring));
+        return new Response(response);
+    }
+
+    private BigDecimal getResultPrice(String partnumber, int discount) throws EntityNotFoundException {
+        Price result;
+        if (priceRepository.existsByPartnumber(partnumber)) {
+            result = priceRepository.findFirstByPartnumber(partnumber);
+        } else {
+            throw new EntityNotFoundException();
+        }
+
+        return BigDecimal.valueOf(result.getPriceUsd() * (100 + discount) / 100)
+                .setScale(2, RoundingMode.UP);
     }
 
     private String getRubPrice(BigDecimal price, LocalDate dateOfRate, String response) {
@@ -109,18 +150,6 @@ public class PriceServiceImpl implements PriceService {
         } else {
             return response + "завтра: ₽" + price;
         }
-    }
-
-    private BigDecimal getResultPrice(String partnumber, int discount) throws EntityNotFoundException {
-        Price result;
-        if (priceRepository.existsByPartnumber(partnumber)) {
-            result = priceRepository.findFirstByPartnumber(partnumber);
-        } else {
-            throw new EntityNotFoundException();
-        }
-
-        return BigDecimal.valueOf(result.getPriceUsd() * (100 + discount) / 100)
-                .setScale(2, RoundingMode.UP);
     }
 
     private UsdRate getRates(LocalDate date) {

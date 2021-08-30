@@ -11,4 +11,5 @@ public interface PriceService {
 
     Response getPrice(String partnumber, int discount, LocalDate dateOfRate);
 
+    Response find(String substring);
 }

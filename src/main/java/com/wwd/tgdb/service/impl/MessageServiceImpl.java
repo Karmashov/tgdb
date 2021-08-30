@@ -88,10 +88,13 @@ public class MessageServiceImpl implements MessageService {
                 return priceService.getPrice(command[1],
                         //TODO а если придет строка в command[2]?
                         command.length > 2 ? Integer.parseInt(command[2].replaceAll("[^\\d-.]", "")) : 0,
-                        command.length > 3 ?
+                            command.length > 3 ?
                                 command[3].equalsIgnoreCase("завтра") ?
                                         LocalDate.now().plusDays(1) : LocalDate.now()
                                 : null);
+            }
+            case "/find": {
+                return priceService.find(command[1]);
             }
             case "/rates": {
                 return rateService.downloadRates();

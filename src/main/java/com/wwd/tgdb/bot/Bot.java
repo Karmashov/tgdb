@@ -87,7 +87,16 @@ public class Bot extends TelegramLongPollingBot {
             buttons.add(button);
         }
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        rows.add(buttons);
+        if (buttons.get(0).getText().equals("Да")) {
+            rows.add(buttons);
+        } else {
+            for (InlineKeyboardButton button : buttons) {
+                List<InlineKeyboardButton> but = new ArrayList<>();
+                but.add(button);
+                rows.add(but);
+            }
+        }
+
         keyboard.setKeyboard(rows);
 
         return keyboard;
